@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>Rondon Capital — Field Inspector</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;
+  --surface:#12131a;
+  --card:#1a1c26;
+  --border:#252836;
+  --gold:#d4a843;
+  --gold2:#f0c460;
+  --goldd:rgba(212,168,67,0.12);
+  --green:#4ecb8d;
+  --red:#e85555;
+  --yellow:#e8b84a;
+  --blue:#4a90d9;
+  --text:#f0f1f5;
+  --muted:#5a6070;
+  --soft:#8892a4;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding-bottom:80px}
+
+/* STATUS BAR SAFE AREA */
+.safe-top{height:env(safe-area-inset-top,0px)}
+
+/* HEADER */
+.header{
+  background:linear-gradient(180deg,rgba(10,10,15,1) 0%,rgba(10,10,15,0.95) 100%);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px 12px;
+  position:sticky;top:0;z-index:100;
+}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:var(--gold);letter-spacing:-0.3px}
+.logo span{color:var(--text);font-weight:700}
+.prop-pill{
+  background:var(--goldd);
+  border:1px solid var(--gold);
+  color:var(--gold);
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  padding:4px 10px;
+  border-radius:20px;
+  max-width:140px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(18,19,26,0.97);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
+  z-index:200;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;padding:4px 8px;
+  cursor:pointer;transition:all .2s;
+  border:none;background:none;color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;
+}
+.nav-item.active{color:var(--gold)}
+.nav-icon{font-size:20px;line-height:1}
+
+/* PAGES */
+.page{display:none;padding:16px;animation:fadeIn .2s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* PROP SELECTOR */
+.prop-tabs{display:flex;gap:8px;margin-bottom:16px}
+.ptab{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  color:var(--muted);border-radius:10px;padding:10px 8px;
+  cursor:pointer;font-size:12px;font-weight:500;
+  font-family:'DM Sans',sans-serif;transition:all .2s;
+  text-align:center;
+}
+.ptab.active{background:var(--goldd);border-color:var(--gold);color:var(--gold)}
+
+/* CARD */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+}
+.card-label{
+  font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:700;
+  color:var(--gold);text-transform:uppercase;
+  letter-spacing:1.2px;margin-bottom:14px;
+  display:flex;align-items:center;gap:6px;
+}
+
+/* INPUTS */
+.field{margin-bottom:12px}
+.field label{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.5px;font-weight:500;display:block;margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:15px;padding:12px 14px;outline:none;
+  transition:border-color .2s;-webkit-appearance:none;
+}
+.field input:focus,.field select:focus{border-color:var(--gold)}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6070' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.prefix-wrap{position:relative}
+.prefix-wrap .pfx{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gold);font-family:'DM Mono',monospace;font-size:14px;pointer-events:none}
+.prefix-wrap input{padding-left:26px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* STAT BOXES */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.stat-box.full{grid-column:1/-1}
+.stat-box.green{border-color:var(--green);background:rgba(78,203,141,0.06)}
+.stat-box.red{border-color:var(--red);background:rgba(232,85,85,0.06)}
+.stat-box.yellow{border-color:var(--yellow);background:rgba(232,184,74,0.06)}
+.stat-box.gold{border-color:var(--gold);background:var(--goldd)}
+.slabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.sval{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--text)}
+.stat-box.green .sval{color:var(--green)}
+.stat-box.red .sval{color:var(--red)}
+.stat-box.yellow .sval{color:var(--yellow)}
+.stat-box.gold .sval{color:var(--gold)}
+
+/* VERDICT */
+.verdict{border-radius:16px;padding:20px;text-align:center;margin:12px 0}
+.verdict.green{background:rgba(78,203,141,0.08);border:1px solid var(--green)}
+.verdict.yellow{background:rgba(232,184,74,0.08);border:1px solid var(--yellow)}
+.verdict.red{background:rgba(232,85,85,0.08);border:1px solid var(--red)}
+.v-emoji{font-size:36px;margin-bottom:8px}
+.v-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:2px}
+.verdict.green .v-title{color:var(--green)}
+.verdict.yellow .v-title{color:var(--yellow)}
+.verdict.red .v-title{color:var(--red)}
+.v-sub{font-size:13px;color:var(--soft);margin-top:6px}
+
+/* CHECKLIST */
+.check-group{margin-bottom:16px}
+.check-group-title{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding:0 2px;font-family:'Syne',sans-serif}
+.check-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;margin-bottom:8px;
+  transition:all .2s;
+}
+.check-item.ok{border-color:var(--green);background:rgba(78,203,141,0.05)}
+.check-item.bad{border-color:var(--red);background:rgba(232,85,85,0.05)}
+.ci-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ci-name{font-weight:500;font-size:14px;flex:1}
+.ci-desc{font-size:11px;color:var(--muted);margin-top:3px}
+.ci-btns{display:flex;gap:6px;flex-shrink:0}
+.cbtn{
+  width:32px;height:32px;border-radius:8px;border:1px solid;
+  font-size:14px;cursor:pointer;background:none;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;font-family:inherit;
+}
+.cbtn.ok{border-color:var(--green);color:var(--green)}
+.cbtn.ok.active,.cbtn.ok:active{background:var(--green);color:#000;transform:scale(0.95)}
+.cbtn.bad{border-color:var(--red);color:var(--red)}
+.cbtn.bad.active,.cbtn.bad:active{background:var(--red);color:#fff;transform:scale(0.95)}
+.ci-detail{margin-top:10px;display:none;gap:8px;flex-direction:column}
+.ci-detail.show{display:flex}
+.ci-input{
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;
+  font-size:13px;padding:8px 10px;outline:none;
+}
+.ci-input:focus{border-color:var(--gold)}
+.ci-note{font-family:'DM Sans',sans-serif;font-size:13px}
+
+/* PROGRESS BAR */
+.prog-wrap{margin:8px 0}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--soft);margin-bottom:5px}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;background:var(--gold);transition:width .4s ease}
+.prog-fill.green{background:var(--green)}
+.prog-fill.red{background:var(--red)}
+
+/* NOTES / PHOTOS */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.photo-slot{
+  aspect-ratio:1;border-radius:10px;border:1px dashed var(--border);
+  background:var(--surface);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  font-size:22px;
+}
+.photo-slot:hover,.photo-slot:active{border-color:var(--gold);background:var(--goldd)}
+.photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0}
+.photo-slot .ph-del{position:absolute;top:4px;right:4px;background:rgba(232,85,85,.8);color:#fff;border:none;border-radius:5px;width:20px;height:20px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.photo-slot:hover .ph-del,.photo-slot:active .ph-del{display:flex}
+.photo-slot .ph-lbl{font-size:10px;color:var(--muted);margin-top:4px}
+.add-photo-btn{
+  width:100%;padding:12px;background:var(--goldd);border:1px solid var(--gold);
+  color:var(--gold);border-radius:10px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.add-photo-btn:active{opacity:.8;transform:scale(.98)}
+input[type=file]{display:none}
+
+/* NOTES AREA */
+.notes-area{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:14px;padding:14px;outline:none;resize:none;min-height:100px;
+  line-height:1.6;transition:border-color .2s;
+}
+.notes-area:focus{border-color:var(--gold)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* COST ROW */
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.cost-row:last-child{border-bottom:none}
+.cost-label{font-size:13px;color:var(--text)}
+.cost-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.cost-val{font-family:'DM Mono',monospace;font-size:14px;color:var(--gold)}
+
+/* SUMMARY TOTAL */
+.total-box{
+  background:var(--goldd);border:1px solid var(--gold);
+  border-radius:14px;padding:16px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:12px;
+}
+.total-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+.total-val{font-family:'DM Mono',monospace;font-size:22px;color:var(--gold);font-weight:500}
+
+/* BADGE */
+.badge{display:inline-block;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500;margin-right:4px;margin-bottom:4px}
+.badge.gold{background:var(--goldd);color:var(--gold);border:1px solid var(--gold)}
+.badge.green{background:rgba(78,203,141,.12);color:var(--green)}
+.badge.red{background:rgba(232,85,85,.12);color:var(--red)}
+
+/* ACTION BUTTONS */
+.btn-primary{
+  width:100%;background:var(--gold);color:#000;border:none;
+  border-radius:12px;padding:14px;font-family:'Syne',sans-serif;
+  font-weight:700;font-size:14px;cursor:pointer;
+  letter-spacing:.5px;transition:all .2s;margin-bottom:8px;
+}
+.btn-primary:active{opacity:.85;transform:scale(.98)}
+.btn-secondary{
+  width:100%;background:none;color:var(--soft);border:1px solid var(--border);
+  border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;
+  font-size:14px;cursor:pointer;transition:all .2s;
+}
+.btn-secondary:active{border-color:var(--gold);color:var(--gold)}
+
+/* CHECKLIST SUMMARY */
+.chk-summary{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.chk-s-row{display:flex;gap:8px;margin-bottom:10px}
+.chk-s-box{flex:1;text-align:center;background:var(--card);border-radius:10px;padding:10px}
+.chk-s-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
+.chk-s-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* FLOATING SAVE BTN */
+.float-btn{
+  position:fixed;bottom:90px;right:16px;
+  background:var(--gold);color:#000;border:none;
+  border-radius:50%;width:52px;height:52px;
+  font-size:22px;cursor:pointer;
+  box-shadow:0 4px 20px rgba(212,168,67,0.4);
+  transition:all .2s;z-index:150;
+  display:flex;align-items:center;justify-content:center;
+}
+.float-btn:active{transform:scale(.9)}
+
+/* INTRO SCREEN */
+.intro{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:60vh;text-align:center;
+  padding:20px;
+}
+.intro-logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--gold);margin-bottom:6px}
+.intro-sub{font-size:14px;color:var(--soft);margin-bottom:32px}
+.intro-icon{font-size:64px;margin-bottom:20px}
+
+/* NOTE: PHOTO */
+.note-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.note-address{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.note-meta{font-size:11px;color:var(--muted)}
+
+/* SMOOTH SCROLL */
+html{scroll-behavior:smooth}
+
+/* ALERTS */
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);
+  background:var(--green);color:#000;font-weight:600;font-size:13px;
+  padding:10px 20px;border-radius:20px;z-index:500;
+  transition:transform .3s ease;white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="safe-top"></div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">Rondon <span>Capital</span></div>
+    <div class="prop-pill" id="headerProp">Sin propiedad</div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Guardado</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showPage('home',this)">
+    <div class="nav-icon">🏠</div>
+    <span>Inicio</span>
+  </button>
+  <button class="nav-item" onclick="showPage('calc',this)">
+    <div class="nav-icon">💰</div>
+    <span>Calcular</span>
+  </button>
+  <button class="nav-item" onclick="showPage('check',this)">
+    <div class="nav-icon">✅</div>
+    <span>Inspección</span>
+  </button>
+  <button class="nav-item" onclick="showPage('notes',this)">
+    <div class="nav-icon">📸</div>
+    <span>Notas</span>
+  </button>
+  <button class="nav-item" onclick="showPage('summary',this)">
+    <div class="nav-icon">📊</div>
+    <span>Resumen</span>
+  </button>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home" class="page active">
+  <div style="margin-bottom:16px">
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px">Field Inspector</div>
+    <div style="font-size:13px;color:var(--soft)">Análisis de propiedades en campo</div>
+  </div>
+
+  <div class="prop-tabs">
+    <button class="ptab active" onclick="selProp(0,this)" id="ptab0">🏠 Prop 1</button>
+    <button class="ptab" onclick="selProp(1,this)" id="ptab1">🏠 Prop 2</button>
+    <button class="ptab" onclick="selProp(2,this)" id="ptab2">🏠 Prop 3</button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">📍 Propiedad</div>
+    <div class="field">
+      <label>Dirección</label>
+      <input type="text" id="addr" placeholder="Ej: 2712 Greenbriar Rd, Montgomery AL" oninput="upProp()">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Precio Compra</label>
+        <div class="prefix-wrap"><span class="pfx">$</span><input type="number" id="pp" placeholder="75000" oninput="upProp()" inputmode="numeric"></div>
+      </div>
+      <div class="field">
+        <label>ARV Est.</label>
+        <div class="prefix-wrap"><span class="pfx">$</span><input type="number" id="arv" placeholder="200000" oninput="upProp()" inputmode="numeric"></div>
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field"><label>Camas</label><input type="number" id="beds" placeholder="3" oninput="upProp()" inputmode="numeric"></div>
+      <div class="field"><label>Baños</label><input type="number" id="baths" placeholder="2" oninput="upProp()" inputmode="numeric"></div>
+      <div class="field"><label>Sqft</label><input type="number" id="sqft" placeholder="2147" oninput="upProp()" inputmode="numeric"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Año</label><input type="number" id="yr" placeholder="1957" oninput="upProp()" inputmode="numeric"></div>
+      <div class="field"><label>ZIP</label><input id="zip" placeholder="36111" oninput="upProp()"></div>
+    </div>
+    <div class="field">
+      <label>Estado</label>
+      <select id="pst" oninput="upProp()">
+        <option value="fixer">Fixer / AS-IS</option>
+        <option value="foreclosure">Foreclosure / REO</option>
+        <option value="fsbo">FSBO</option>
+        <option value="listed">Listed MLS</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="stats-grid">
+    <div class="stat-box full gold">
+      <div class="slabel">Ganancia Moderada Estimada</div>
+      <div class="sval" id="qs-profit">$—</div>
+    </div>
+    <div class="stat-box">
+      <div class="slabel">Inversión Total</div>
+      <div class="sval" id="qs-inv" style="font-size:16px">$—</div>
+    </div>
+    <div class="stat-box">
+      <div class="slabel">Trans. Costs</div>
+      <div class="sval" id="qs-tc" style="font-size:16px">$—</div>
+    </div>
+  </div>
+
+  <div class="verdict yellow" id="homeVerdict">
+    <div class="v-emoji" id="hve">🤔</div>
+    <div class="v-title" id="hvt">INGRESA DATOS</div>
+    <div class="v-sub" id="hvs">Completa precio de compra y ARV</div>
+  </div>
+</div>
+
+<!-- ===== CALC PAGE ===== -->
+<div id="page-calc" class="page">
+  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:16px">💰 Calculadora</div>
+
+  <div class="card">
+    <div class="card-label">📐 Materiales por Sqft</div>
+    <div style="font-size:12px;color:var(--soft);margin-bottom:12px">Ingresa precio/unidad y cantidad — el total se calcula solo</div>
+    <div id="matList"></div>
+    <button class="btn-secondary" onclick="addMat()" style="margin-top:8px">+ Agregar Material</button>
+    <button class="btn-secondary" onclick="loadPreset()" style="margin-top:6px">⚡ Cargar Plantilla Típica</button>
+    <div class="total-box" style="margin-top:12px">
+      <div class="total-label">Materiales</div>
+      <div class="total-val" id="matTot">$0</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">👷 Mano de Obra</div>
+    <div style="padding:10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:12px;font-size:12px">
+      <span style="color:var(--gold);font-weight:600">Tus descuentos: </span>
+      <span style="color:var(--green)">Techo 20%</span> · <span style="color:var(--green)">Plomería/Eléc 50%</span>
+    </div>
+    <div id="wrkList"></div>
+    <button class="btn-secondary" onclick="addWrk()" style="margin-top:8px">+ Agregar Obrero</button>
+    <div class="total-box" style="margin-top:12px">
+      <div class="total-label">Obreros Total</div>
+      <div class="total-val" id="wrkTot">$0</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">📅 Holding</div>
+    <div class="row2">
+      <div class="field"><label>Meses</label><input type="number" id="hmo" value="3" min="1" max="12" oninput="upHld()" inputmode="numeric"></div>
+      <div class="field"><label>$/Mes (gastos)</label><div class="prefix-wrap"><span class="pfx">$</span><input type="number" id="hfx" value="360" oninput="upHld()" inputmode="numeric"></div></div>
+    </div>
+    <div class="total-box">
+      <div class="total-label">Holding Total</div>
+      <div class="total-val" id="hldTot">$1,080</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHECKLIST PAGE ===== -->
+<div id="page-check" class="page">
+  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:12px">✅ Inspección</div>
+
+  <div class="chk-summary">
+    <div class="chk-s-row">
+      <div class="chk-s-box">
+        <div class="chk-s-num" id="ckOk" style="color:var(--green)">0</div>
+        <div class="chk-s-lbl">OK</div>
+      </div>
+      <div class="chk-s-box">
+        <div class="chk-s-num" id="ckBad" style="color:var(--red)">0</div>
+        <div class="chk-s-lbl">Problemas</div>
+      </div>
+      <div class="chk-s-box">
+        <div class="chk-s-num" id="ckCost" style="color:var(--gold)">$0</div>
+        <div class="chk-s-lbl">Costo Rep.</div>
+      </div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-label"><span>Progreso</span><span id="ckPct">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="ckBar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div id="ckExt"></div>
+  <div id="ckInt"></div>
+  <div id="ckSys"></div>
+</div>
+
+<!-- ===== NOTES PAGE ===== -->
+<div id="page-notes" class="page">
+  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px">📸 Fotos & Notas</div>
+  <div style="font-size:12px;color:var(--soft);margin-bottom:16px" id="notePropName">Selecciona una propiedad primero</div>
+
+  <div class="card">
+    <div class="card-label">📷 Fotos de la Propiedad</div>
+    <div class="photo-grid" id="photoGrid"></div>
+    <label class="add-photo-btn" for="photoInput">
+      <span>📷</span> Tomar / Agregar Foto
+    </label>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" multiple onchange="handlePhotos(this)">
+  </div>
+
+  <div class="card">
+    <div class="card-label">📝 Notas de Campo</div>
+    <textarea class="notes-area" id="propNotes" placeholder="Observaciones de la visita, condición general, detalles importantes..." rows="5" oninput="upProp()"></textarea>
+  </div>
+
+  <div class="card">
+    <div class="card-label">🔑 Puntos Críticos</div>
+    <div id="criticalList"></div>
+  </div>
+</div>
+
+<!-- ===== SUMMARY PAGE ===== -->
+<div id="page-summary" class="page">
+  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:16px">📊 Resumen Final</div>
+
+  <div style="background:linear-gradient(135deg,#1a1c26,#12131a);border:1px solid var(--gold);border-radius:16px;padding:16px;margin-bottom:12px">
+    <div style="font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Propiedad</div>
+    <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:6px" id="sumAddr">—</div>
+    <div id="sumBadges"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">💰 Desglose</div>
+    <div class="cost-row"><div><div class="cost-label">Precio Compra</div></div><div class="cost-val" id="s-pp">$0</div></div>
+    <div class="cost-row"><div><div class="cost-label">Closing Costs</div><div class="cost-sub">3% compra + 4% venta</div></div><div class="cost-val" id="s-cc">$0</div></div>
+    <div class="cost-row"><div><div class="cost-label">Materiales</div></div><div class="cost-val" id="s-mat">$0</div></div>
+    <div class="cost-row"><div><div class="cost-label">Obreros</div></div><div class="cost-val" id="s-wrk">$0</div></div>
+    <div class="cost-row"><div><div class="cost-label">Reparaciones Insp.</div></div><div class="cost-val" id="s-rep">$0</div></div>
+    <div class="cost-row"><div><div class="cost-label">Holding</div></div><div class="cost-val" id="s-hld">$0</div></div>
+    <div class="total-box"><div class="total-label">INVERSIÓN TOTAL</div><div class="total-val" id="s-tot">$0</div></div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-box" id="sb-cons">
+      <div class="slabel">Conservador (−10%)</div>
+      <div class="sval" id="s-cons">$0</div>
+    </div>
+    <div class="stat-box" id="sb-mod">
+      <div class="slabel">Moderado (ARV)</div>
+      <div class="sval" id="s-mod">$0</div>
+    </div>
+    <div class="stat-box full" id="sb-opt">
+      <div class="slabel">Optimista (+10%)</div>
+      <div class="sval" id="s-opt">$0</div>
+    </div>
+  </div>
+
+  <div class="verdict yellow" id="finalVerdict">
+    <div class="v-emoji" id="fve">🤔</div>
+    <div class="v-title" id="fvt">INGRESA DATOS</div>
+    <div class="v-sub" id="fvs">Completa todos los módulos</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">🔍 Inspección</div>
+    <div class="chk-s-row">
+      <div class="chk-s-box"><div class="chk-s-num" id="s-ok" style="color:var(--green)">0</div><div class="chk-s-lbl">OK</div></div>
+      <div class="chk-s-box"><div class="chk-s-num" id="s-bad" style="color:var(--red)">0</div><div class="chk-s-lbl">Issues</div></div>
+      <div class="chk-s-box"><div class="chk-s-num" id="s-rc" style="color:var(--gold)">$0</div><div class="chk-s-lbl">Reparac.</div></div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="shareReport()">📤 Compartir Reporte</button>
+  <button class="btn-secondary" onclick="copyReport()">📋 Copiar al Clipboard</button>
+</div>
+
+<button class="float-btn" onclick="saveToast()" title="Guardado automático">💾</button>
+
+<script>
+// ===== STATE =====
+let cp=0;
+let props=[
+  {addr:'',pp:0,arv:0,beds:0,baths:0,sqft:0,yr:0,zip:'',st:'fixer',notes:'',cs:{},photos:[]},
+  {addr:'',pp:0,arv:0,beds:0,baths:0,sqft:0,yr:0,zip:'',st:'fixer',notes:'',cs:{},photos:[]},
+  {addr:'',pp:0,arv:0,beds:0,baths:0,sqft:0,yr:0,zip:'',st:'fixer',notes:'',cs:{},photos:[]}
+];
+let mats=[];
+let wrkrs=[];
+let hld={mo:3,fx:360};
+
+// ===== CHECKLIST DATA =====
+const CL={
+  ext:{title:'🏗 Exterior',items:[
+    {id:'roof',n:'Techo',d:'Edad, goteras, tejas, flashings'},
+    {id:'found',n:'Fundación',d:'Grietas, movimiento, humedad'},
+    {id:'walls',n:'Paredes Ext.',d:'Ladrillo, siding, pintura'},
+    {id:'wins',n:'Ventanas',d:'Marcos, sellos, vidrios'},
+    {id:'doors',n:'Puertas Ext.',d:'Funcionamiento, sellos'},
+    {id:'land',n:'Patio/Jardín',d:'Limpieza, árboles, cerca'},
+    {id:'gar',n:'Garaje/Carport',d:'Puerta, piso, techo'},
+  ]},
+  int:{title:'🏠 Interior',items:[
+    {id:'flr',n:'Pisos',d:'Hardwood, alfombra, tile'},
+    {id:'wint',n:'Paredes/Cielos',d:'Grietas, humedad, texturas'},
+    {id:'kit',n:'Cocina',d:'Gabinetes, counters, sink'},
+    {id:'bath',n:'Baños',d:'Tile, vanity, tina, toilet'},
+    {id:'bed',n:'Cuartos',d:'Tamaño, closets, ventanas'},
+    {id:'liv',n:'Sala/Comedor',d:'Layout, estado, luz'},
+  ]},
+  sys:{title:'⚡ Sistemas',items:[
+    {id:'elec',n:'Eléctrico',d:'Panel, knob-and-tube, outlets'},
+    {id:'plmb',n:'Plomería',d:'Galvanizado vs cobre, fugas'},
+    {id:'hvac',n:'HVAC/AC',d:'Edad, funcionamiento'},
+    {id:'wh',n:'Calentador Agua',d:'Edad, conexiones'},
+    {id:'lead',n:'Plomo/Asbesto',d:'Riesgo pre-1980'},
+    {id:'pest',n:'Plagas/Termitas',d:'Daño estructural'},
+    {id:'mold',n:'Moho/Humedad',d:'Manchas, olor'},
+  ]}
+};
+
+// ===== NAV =====
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='summary')upSum();
+  if(id==='notes')upNotes();
+}
+
+// ===== PROPERTY =====
+function selProp(i,btn){
+  cp=i;
+  document.querySelectorAll('.ptab').forEach((b,j)=>b.classList.toggle('active',j===i));
+  loadPF();renChk();upAll();upNotes();
+}
+
+function loadPF(){
+  const p=props[cp];
+  ['addr','pp','arv','beds','baths','sqft','yr','zip','pst','propNotes'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value=p[id]||'';
+  });
+  document.getElementById('headerProp').textContent=p.addr||'Sin dirección';
+}
+
+function upProp(){
+  const p=props[cp];
+  p.addr=v('addr');p.pp=n('pp');p.arv=n('arv');
+  p.beds=n('beds');p.baths=n('baths');p.sqft=n('sqft');
+  p.yr=n('yr');p.zip=v('zip');p.st=v('pst');p.notes=v('propNotes');
+  document.getElementById('headerProp').textContent=p.addr||'Sin dirección';
+  if(document.getElementById('notePropName'))
+    document.getElementById('notePropName').textContent=p.addr||'Sin propiedad seleccionada';
+  upAll();
+}
+
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+function n(id){return parseFloat(v(id))||0;}
+
+// ===== CALCULATIONS =====
+function getMT(){return mats.reduce((s,m)=>s+(m.pu||0)*(m.q||0),0);}
+function getWT(){return wrkrs.reduce((s,w)=>s+(w.dw||0)*(w.d||0),0);}
+function getRT(){const p=props[cp];return Object.values(p.cs||{}).reduce((s,c)=>s+(c.s==='bad'?parseFloat(c.c)||0:0),0);}
+function getHF(){return(hld.fx||0)*(hld.mo||0);}
+
+function upAll(){
+  const p=props[cp],pp=p.pp,arv=p.arv;
+  const cb=pp*0.03,rs=arv*0.03,cs=arv*0.01;
+  const mt=getMT(),wt=getWT(),rt=getRT(),ht=getHF();
+  const ti=pp+cb+mt+wt+rt+ht+rs+cs;
+  const pm=arv-ti;
+
+  document.getElementById('qs-profit').textContent=arv&&pp?fmt(pm):'$—';
+  document.getElementById('qs-inv').textContent=ti>0?fmt(ti):'$—';
+  document.getElementById('qs-tc').textContent=(cb+rs+cs)>0?fmt(cb+rs+cs):'$—';
+
+  upVerdict('homeVerdict','hve','hvt','hvs',pm,arv,pp);
+  document.getElementById('matTot').textContent=fmt(mt);
+  document.getElementById('wrkTot').textContent=fmt(wt);
+  document.getElementById('hldTot').textContent=fmt(ht);
+}
+
+function upVerdict(boxId,eid,tid,sid,pm,arv,pp){
+  const b=document.getElementById(boxId);
+  const e=document.getElementById(eid),t=document.getElementById(tid),s=document.getElementById(sid);
+  if(!b)return;
+  if(!arv||!pp){b.className='verdict yellow';e.textContent='🤔';t.textContent='INGRESA DATOS';s.textContent='Completa precio y ARV';}
+  else if(pm>40000){b.className='verdict green';e.textContent='🚀';t.textContent='PROCEDER';s.textContent='Ganancia moderada: '+fmt(pm);}
+  else if(pm>15000){b.className='verdict yellow';e.textContent='🟡';t.textContent='NEGOCIAR';s.textContent='Ganancia moderada: '+fmt(pm);}
+  else if(pm>0){b.className='verdict yellow';e.textContent='⚠️';t.textContent='RIESGOSO';s.textContent='Margen: '+fmt(pm);}
+  else{b.className='verdict red';e.textContent='🚫';t.textContent='EVITAR';s.textContent='Pérdida: '+fmt(pm);}
+}
+
+// ===== MATERIALS =====
+function addMat(nm='',pu=0,q=0,u='sqft'){
+  mats.push({nm,pu,q,u});renMat();
+}
+
+function loadPreset(){
+  const sq=props[cp].sqft||1500;
+  mats=[
+    {nm:'Piso LVP',pu:2.5,q:sq,u:'sqft'},
+    {nm:'Pintura Interior',pu:35,q:Math.ceil(sq/400),u:'galón'},
+    {nm:'Pintura Exterior',pu:35,q:Math.ceil(sq/250),u:'galón'},
+    {nm:'Gabinetes',pu:150,q:10,u:'unidad'},
+    {nm:'Countertop',pu:40,q:15,u:'ft'},
+    {nm:'Tile Baño',pu:3.5,q:120,u:'sqft'},
+    {nm:'Fixtures Baño',pu:80,q:2,u:'set'},
+    {nm:'Puertas',pu:120,q:5,u:'unidad'},
+    {nm:'Luminarias',pu:45,q:8,u:'unidad'},
+  ];renMat();
+}
+
+function renMat(){
+  const c=document.getElementById('matList');
+  if(!c)return;
+  c.innerHTML=mats.map((m,i)=>{
+    const tot=(m.pu||0)*(m.q||0);
+    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <input style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;outline:none" value="${m.nm}" placeholder="Material" oninput="mats[${i}].nm=this.value">
+        <button style="background:none;border:1px solid var(--red);color:var(--red);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:12px" onclick="mats.splice(${i},1);renMat();upAll()">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">$/Unidad</div><div style="position:relative"><span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px;font-family:monospace">$</span><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:13px;padding:8px 6px 8px 20px;outline:none" value="${m.pu}" oninput="mats[${i}].pu=parseFloat(this.value)||0;upMR(${i})" inputmode="decimal"></div></div>
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Cantidad</div><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:13px;padding:8px;outline:none" value="${m.q}" oninput="mats[${i}].q=parseFloat(this.value)||0;upMR(${i})" inputmode="decimal"></div>
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Unidad</div><input style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:8px;outline:none" value="${m.u}" oninput="mats[${i}].u=this.value"></div>
+      </div>
+      <div style="margin-top:8px;text-align:right;font-family:monospace;color:var(--gold);font-size:15px;font-weight:500" id="mr-${i}">${fmt(tot)}</div>
+    </div>`;
+  }).join('');
+  upMTot();
+}
+
+function upMR(i){
+  const t=(mats[i].pu||0)*(mats[i].q||0);
+  const el=document.getElementById('mr-'+i);
+  if(el)el.textContent=fmt(t);
+  upMTot();
+}
+
+function upMTot(){
+  const t=getMT();
+  const el=document.getElementById('matTot');
+  if(el)el.textContent=fmt(t);
+  upAll();
+}
+
+// ===== WORKERS =====
+function addWrk(n='Obrero',dw=150,d=20){
+  wrkrs.push({n,dw,d});renWrk();
+}
+
+function renWrk(){
+  const c=document.getElementById('wrkList');if(!c)return;
+  c.innerHTML=wrkrs.map((w,i)=>{
+    const tot=(w.dw||0)*(w.d||0);
+    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <input style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;padding:8px 10px;outline:none" value="${w.n}" placeholder="Oficio" oninput="wrkrs[${i}].n=this.value">
+        <button style="background:none;border:1px solid var(--red);color:var(--red);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:12px" onclick="wrkrs.splice(${i},1);renWrk();upAll()">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Salario Diario</div><div style="position:relative"><span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px;font-family:monospace">$</span><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:14px;padding:8px 8px 8px 20px;outline:none" value="${w.dw}" oninput="wrkrs[${i}].dw=parseFloat(this.value)||0;renWrk();upAll()" inputmode="numeric"></div></div>
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Días a Trabajar</div><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:14px;padding:8px;outline:none" value="${w.d}" oninput="wrkrs[${i}].d=parseFloat(this.value)||0;renWrk();upAll()" inputmode="numeric"></div>
+      </div>
+      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border)">
+        <span style="font-size:11px;color:var(--muted)">${w.d} días × ${fmt(w.dw)}/día</span>
+        <span style="font-family:monospace;color:var(--gold);font-size:16px;font-weight:500">${fmt(tot)}</span>
+      </div>
+    </div>`;
+  }).join('');
+  const el=document.getElementById('wrkTot');if(el)el.textContent=fmt(getWT());
+  upAll();
+}
+
+// ===== HOLDING =====
+function upHld(){
+  hld.mo=n('hmo');hld.fx=n('hfx');
+  const el=document.getElementById('hldTot');if(el)el.textContent=fmt(getHF());
+  upAll();
+}
+
+// ===== CHECKLIST =====
+function renChk(){
+  renCS('ckExt',CL.ext);
+  renCS('ckInt',CL.int);
+  renCS('ckSys',CL.sys);
+  upCS();renCritical();
+}
+
+function renCS(cid,grp){
+  const c=document.getElementById(cid);if(!c)return;
+  const p=props[cp];if(!p.cs)p.cs={};
+  c.innerHTML=`<div class="check-group"><div class="check-group-title">${grp.title}</div>${
+    grp.items.map(it=>{
+      const st=p.cs[it.id]||{s:'p',c:'',n:''};
+      const cls=st.s==='ok'?'ok':st.s==='bad'?'bad':'';
+      const cbOk=st.s==='ok'?'active':'';
+      const cbBad=st.s==='bad'?'active':'';
+      const showDetail=st.s!=='p'?'show':'';
+      return`<div class="check-item ${cls}" id="ci-${it.id}">
+        <div class="ci-top">
+          <div style="flex:1">
+            <div class="ci-name">${it.n}</div>
+            <div class="ci-desc">${it.d}</div>
+          </div>
+          <div class="ci-btns">
+            <button class="cbtn ok ${cbOk}" onclick="setCS('${it.id}','ok')">✓</button>
+            <button class="cbtn bad ${cbBad}" onclick="setCS('${it.id}','bad')">!</button>
+          </div>
+        </div>
+        <div class="ci-detail ${showDetail}" id="cd-${it.id}">
+          <input class="ci-input" type="number" placeholder="$ Costo reparación" value="${st.c}" oninput="setCC('${it.id}',this.value)" inputmode="numeric">
+          <input class="ci-input ci-note" placeholder="Nota de inspección..." value="${st.n}" oninput="setCN('${it.id}',this.value)">
+        </div>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+
+function setCS(id,s){
+  const p=props[cp];
+  if(!p.cs[id])p.cs[id]={s:'p',c:'',n:''};
+  const prev=p.cs[id].s;
+  p.cs[id].s=prev===s?'p':s;
+  renChk();upAll();
+}
+
+function setCC(id,v){const p=props[cp];if(!p.cs[id])p.cs[id]={s:'p',c:'',n:''};p.cs[id].c=v;upCS();upAll();}
+function setCN(id,v){const p=props[cp];if(!p.cs[id])p.cs[id]={s:'p',c:'',n:''};p.cs[id].n=v;}
+
+function upCS(){
+  const p=props[cp];const st=p.cs||{};
+  let ok=0,bad=0,cost=0,rev=0;
+  const all=[...CL.ext.items,...CL.int.items,...CL.sys.items];
+  all.forEach(it=>{const s=st[it.id];if(s&&s.s!=='p')rev++;if(s&&s.s==='ok')ok++;if(s&&s.s==='bad'){bad++;cost+=parseFloat(s.c)||0;}});
+  const pct=all.length>0?Math.round(rev/all.length*100):0;
+  ['ckOk','ckBad','ckCost','ckPct'].forEach(id=>{const el=document.getElementById(id);if(!el)return;});
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('ckOk',ok);setEl('ckBad',bad);setEl('ckCost',fmt(cost));setEl('ckPct',pct+'%');
+  const pb=document.getElementById('ckBar');if(pb){pb.style.width=pct+'%';pb.className='prog-fill '+(bad>ok?'red':'green');}
+}
+
+function renCritical(){
+  const c=document.getElementById('criticalList');if(!c)return;
+  const p=props[cp];const st=p.cs||{};
+  const issues=[];
+  const all=[...CL.ext.items,...CL.int.items,...CL.sys.items];
+  all.forEach(it=>{const s=st[it.id];if(s&&s.s==='bad')issues.push({name:it.n,cost:parseFloat(s.c)||0,note:s.n});});
+  if(!issues.length){c.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">Sin problemas detectados aún</div>';return;}
+  c.innerHTML=issues.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(232,85,85,0.06);border:1px solid var(--red);border-radius:10px;margin-bottom:8px"><div><div style="font-size:13px;font-weight:500">${i.name}</div>${i.note?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${i.note}</div>`:''}</div><div style="font-family:monospace;color:var(--red);font-size:14px">${i.cost?fmt(i.cost):'—'}</div></div>`).join('');
+}
+
+// ===== PHOTOS =====
+function handlePhotos(input){
+  const p=props[cp];
+  if(!p.photos)p.photos=[];
+  Array.from(input.files).forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=(e)=>{
+      p.photos.push(e.target.result);
+      renPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+function renPhotos(){
+  const c=document.getElementById('photoGrid');if(!c)return;
+  const p=props[cp];const photos=p.photos||[];
+  c.innerHTML=photos.map((src,i)=>`
+    <div class="photo-slot" style="border-style:solid;border-color:var(--border)">
+      <img src="${src}" alt="foto ${i+1}">
+      <button class="ph-del" onclick="delPhoto(${i});event.stopPropagation()">✕</button>
+    </div>
+  `).join('');
+}
+
+function delPhoto(i){const p=props[cp];p.photos.splice(i,1);renPhotos();}
+
+function upNotes(){
+  const p=props[cp];
+  const el=document.getElementById('propNotes');if(el)el.value=p.notes||'';
+  const nm=document.getElementById('notePropName');if(nm)nm.textContent=p.addr||'Sin propiedad seleccionada';
+  renPhotos();renCritical();
+}
+
+// ===== SUMMARY =====
+function upSum(){
+  const p=props[cp];
+  const pp=p.pp,arv=p.arv;
+  const cb=pp*0.03,rs=arv*0.03,cs=arv*0.01;
+  const mt=getMT(),wt=getWT(),rt=getRT(),ht=getHF();
+  const ti=pp+cb+mt+wt+rt+ht+rs+cs;
+  const pm=arv-ti;
+
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('sumAddr',p.addr||'(Sin dirección)');
+  const bdg=[];
+  if(p.beds)bdg.push(`<span class="badge gold">${p.beds} camas</span>`);
+  if(p.baths)bdg.push(`<span class="badge gold">${p.baths} baños</span>`);
+  if(p.sqft)bdg.push(`<span class="badge gold">${p.sqft.toLocaleString()} sqft</span>`);
+  if(p.yr)bdg.push(`<span class="badge gold">Año ${p.yr}</span>`);
+  if(p.zip)bdg.push(`<span class="badge gold">ZIP ${p.zip}</span>`);
+  const sb=document.getElementById('sumBadges');if(sb)sb.innerHTML=bdg.join('');
+
+  setEl('s-pp',fmt(pp));setEl('s-cc',fmt(cb+rs+cs));
+  setEl('s-mat',fmt(mt));setEl('s-wrk',fmt(wt));
+  setEl('s-rep',fmt(rt));setEl('s-hld',fmt(ht));
+  setEl('s-tot',fmt(ti));setEl('s-arv',arv?fmt(arv):'');
+
+  const pc=(arv*0.9)-ti,po=(arv*1.1)-ti;
+  setEl('s-cons',fmt(pc));setEl('s-mod',fmt(pm));setEl('s-opt',fmt(po));
+
+  [['sb-cons',pc],['sb-mod',pm],['sb-opt',po]].forEach(([id,v])=>{
+    const b=document.getElementById(id);if(!b)return;
+    b.classList.remove('green','red','yellow','gold');
+    if(v>20000)b.classList.add('green');else if(v>0)b.classList.add('yellow');else b.classList.add('red');
+  });
+
+  upVerdict('finalVerdict','fve','fvt','fvs',pm,arv,pp);
+
+  const st=p.cs||{};
+  let ok=0,bad=0;
+  [...CL.ext.items,...CL.int.items,...CL.sys.items].forEach(it=>{
+    const s=st[it.id];if(s&&s.s==='ok')ok++;if(s&&s.s==='bad')bad++;
+  });
+  setEl('s-ok',ok);setEl('s-bad',bad);setEl('s-rc',fmt(rt));
+}
+
+// ===== SHARE =====
+function shareReport(){
+  const p=props[cp],pp=p.pp,arv=p.arv;
+  const ti=pp+pp*0.03+getMT()+getWT()+getRT()+getHF()+arv*0.04;
+  const pm=arv-ti;
+  const text=`🏠 RONDON CAPITAL LLC\n${p.addr||'Sin dirección'}\n${p.beds}BR/${p.baths}BA/${p.sqft}sqft\n\n💰 Compra: ${fmt(pp)}\n📊 ARV: ${fmt(arv)}\n💵 Inversión Total: ${fmt(ti)}\n🎯 Ganancia Moderada: ${fmt(pm)}`;
+  if(navigator.share){navigator.share({title:'Rondon Capital — Flip Analysis',text});}
+  else{copyReport();}
+}
+
+function copyReport(){
+  const p=props[cp],pp=p.pp,arv=p.arv;
+  const ti=pp+pp*0.03+getMT()+getWT()+getRT()+getHF()+arv*0.04;
+  const text=`RONDON CAPITAL LLC\n${p.addr}\nCompra: ${fmt(pp)} | ARV: ${fmt(arv)} | Total: ${fmt(ti)} | Ganancia: ${fmt(arv-ti)}`;
+  navigator.clipboard.writeText(text).then(()=>saveToast('✅ Copiado'));
+}
+
+function saveToast(msg='💾 Guardado'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ===== FORMAT =====
+function fmt(n){
+  if(isNaN(n)||n===undefined)return'$0';
+  const a=Math.abs(n);
+  return(n<0?'-$':'$')+a.toLocaleString('en-US',{maximumFractionDigits:0});
+}
+
+// ===== INIT =====
+renChk();renMat();renWrk();
+addWrk('Plomero',120,5);
+addWrk('Electricista',130,5);
+addWrk('Pintor',100,10);
+upHld();upAll();
+</script>
+</body>
+</html>
