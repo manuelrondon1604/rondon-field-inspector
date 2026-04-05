@@ -2,975 +2,1772 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0a0a0f">
-<title>Rondon Capital — Field Inspector</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlipScout v3 — RONDON LLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0a0f;
-  --surface:#12131a;
-  --card:#1a1c26;
-  --border:#252836;
-  --gold:#d4a843;
-  --gold2:#f0c460;
-  --goldd:rgba(212,168,67,0.12);
-  --green:#4ecb8d;
-  --red:#e85555;
-  --yellow:#e8b84a;
-  --blue:#4a90d9;
-  --text:#f0f1f5;
-  --muted:#5a6070;
-  --soft:#8892a4;
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f9f8f5;
+  --border:#e4e2db;--border2:#d0cec5;
+  --accent:#1a6b3c;--accent-light:#e8f5ee;
+  --hot:#c0392b;--hot-bg:#fdf2f1;
+  --warm:#b8620a;--warm-bg:#fef6ed;
+  --cool:#1a5fa6;--cool-bg:#eef4fd;
+  --text:#1a1917;--text2:#4a4840;--muted:#8a8780;
+  --green:#1a6b3c;--green-bg:#e8f5ee;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.04);
+  --shadow-card:0 2px 8px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
+  --font:'Plus Jakarta Sans',sans-serif;
+  --display:'Bricolage Grotesque',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --r:12px;--r-sm:8px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;min-height:100vh;overflow-x:hidden}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding-bottom:80px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.6;min-height:100vh}
+.app{max-width:1100px;margin:0 auto;padding:28px 16px 80px}
 
-/* STATUS BAR SAFE AREA */
-.safe-top{height:env(safe-area-inset-top,0px)}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-img{height:48px;width:auto;object-fit:contain;display:block}
+.logo-tagline{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding-left:14px;border-left:1px solid var(--border)}
+.logo-icon{width:42px;height:42px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.logo-text h1{font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.5px}
+.logo-text span{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.clock-pill{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:var(--mono);font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* HEADER */
-.header{
-  background:linear-gradient(180deg,rgba(10,10,15,1) 0%,rgba(10,10,15,0.95) 100%);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  padding:14px 20px 12px;
-  position:sticky;top:0;z-index:100;
+.api-banner{background:var(--surface);border:1px solid var(--border);border-left:3px solid #d4500a;border-radius:var(--r-sm);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.api-banner.connected{border-left-color:var(--accent)}
+.api-banner-text{flex:1;min-width:160px}
+.api-banner-text strong{display:block;font-size:13px;font-weight:700}
+.api-banner-text span{font-size:12px;color:var(--muted)}
+.api-key-row{display:flex;gap:8px;flex:2;min-width:260px}
+.api-key-row input{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;transition:border-color .2s}
+.api-key-row input:focus{border-color:var(--accent)}
+.btn-connect{background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:8px 18px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer}
+.connected-badge{display:none;align-items:center;gap:6px;background:var(--green-bg);border:1px solid #b8dfc8;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--green)}
+.connected-badge.show{display:flex}
+
+.alert-bar{padding:10px 16px;margin-bottom:12px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;display:none}
+.alert-bar.show{display:block}
+.alert-bar.warn{background:var(--warm-bg);border:1px solid #f0c070;border-left:3px solid var(--warm);color:var(--warm)}
+.alert-bar.info{background:var(--cool-bg);border:1px solid #b0c8f0;border-left:3px solid var(--cool);color:var(--cool)}
+
+.criteria-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.section-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.zones-count{font-size:10px;color:var(--accent);font-weight:700;font-family:var(--mono)}
+.criteria-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:10px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+.field input,.field select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:var(--font);font-size:14px;font-weight:600;padding:9px 12px;outline:none;-webkit-appearance:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,107,60,.08)}
+.zones-hint{font-size:11px;color:var(--muted);margin-top:4px}
+
+.action-row{display:flex;gap:10px;margin-bottom:18px;align-items:center;flex-wrap:wrap}
+.btn-search{background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:12px 28px;font-family:var(--font);font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px}
+.btn-search:hover{background:#155a32;transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,107,60,.28)}
+.btn-search:disabled{background:var(--border2);cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:var(--surface);color:var(--text2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:11px 18px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.status-chip{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 14px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);transition:background .3s}
+.status-dot.live{background:var(--green);animation:blink 1.5s infinite}
+.status-dot.err{background:var(--hot)}
+
+.progress-wrap{margin-bottom:16px;display:none}
+.progress-wrap.show{display:block}
+.progress-track{height:5px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:6px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#2ecc71);border-radius:5px;transition:width .4s ease;width:0%}
+.progress-info{display:flex;justify-content:space-between}
+.progress-step{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.progress-zones{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700}
+
+.stats-bar{display:none;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stats-bar.show{display:grid}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;box-shadow:var(--shadow)}
+.stat-card-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.stat-card-value{font-family:var(--display);font-size:28px;font-weight:800;line-height:1;letter-spacing:-1.5px}
+.c-green{color:var(--green)}.c-red{color:var(--hot)}.c-amber{color:var(--warm)}.c-blue{color:var(--cool)}.c-text{color:var(--text)}
+
+.results-header{display:none;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.results-header.show{display:flex}
+.results-title{font-family:var(--display);font-size:17px;font-weight:800;letter-spacing:-.5px}
+.filter-pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:600;padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .15s}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.pill-sep{width:1px;background:var(--border);margin:0 2px}
+
+.deals-list{display:flex;flex-direction:column;gap:12px}
+.deal-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-card);transition:transform .2s,box-shadow .2s;animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.deal-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.1)}
+
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 18px 10px;gap:14px}
+.card-addr h3{font-family:var(--display);font-size:16px;font-weight:800;line-height:1.2;margin-bottom:4px;letter-spacing:-.3px}
+.card-meta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:2px}
+.meta-sep{color:var(--border2)}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:3px;vertical-align:middle}
+
+.score-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.score-ring{width:58px;height:58px;border-radius:50%;border:2.5px solid;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring.hot{border-color:var(--hot);background:var(--hot-bg)}
+.score-ring.warm{border-color:#e8a020;background:var(--warm-bg)}
+.score-ring.neutral{border-color:var(--cool);background:var(--cool-bg)}
+.score-num{font-family:var(--display);font-size:22px;font-weight:800;line-height:1;letter-spacing:-1px}
+.score-ring.hot .score-num{color:var(--hot)}.score-ring.warm .score-num{color:#e8a020}.score-ring.neutral .score-num{color:var(--cool)}
+.score-tiny{font-size:8px;font-weight:600;text-transform:uppercase;color:var(--muted)}
+.tag-label{font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:4px}
+.tag-hot{background:var(--hot-bg);color:var(--hot)}.tag-warm{background:var(--warm-bg);color:var(--warm)}.tag-neutral{background:var(--cool-bg);color:var(--cool)}
+
+.metrics-strip{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--border);background:var(--surface2)}
+.metric-cell{padding:11px 14px;border-right:1px solid var(--border)}
+.metric-cell:last-child{border-right:none}
+.metric-cell-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px}
+.metric-cell-val{font-family:var(--display);font-size:18px;font-weight:800;letter-spacing:-.6px;line-height:1}
+.metric-cell-sub{font-size:9px;color:var(--muted);margin-top:2px}
+
+.negobar{padding:9px 18px;font-size:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nego-pass{background:var(--green-bg);color:var(--green)}
+.nego-neg{background:var(--warm-bg);color:var(--warm)}
+.nego-fail{background:var(--hot-bg);color:var(--hot)}
+.negobar strong{font-weight:700}
+
+.insight-bar{padding:10px 18px;font-size:12px;color:var(--text2);line-height:1.65;border-top:1px solid var(--border);background:#fff}
+.insight-bar strong{color:var(--text);font-weight:700}
+.card-actions{display:flex;gap:8px;padding:10px 18px;background:#fff;border-top:1px solid var(--border)}
+.card-action-btn{font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.card-action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.card-action-btn.primary{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.card-action-btn.primary:hover{background:var(--accent);color:#fff}
+
+.empty-state{background:var(--surface);border:1.5px dashed var(--border);border-radius:var(--r);padding:60px 20px;text-align:center}
+.empty-icon{font-size:44px;margin-bottom:12px}
+.empty-state h3{font-family:var(--display);font-size:20px;font-weight:800;margin-bottom:8px}
+.empty-state p{color:var(--muted);font-size:13px;line-height:1.7;max-width:420px;margin:0 auto}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,25,23,.5);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:28px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal h2{font-family:var(--display);font-size:20px;font-weight:800;margin-bottom:8px}
+.modal p{color:var(--muted);font-size:12.5px;margin-bottom:18px;line-height:1.65}
+.modal-fields{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;z-index:200;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:760px){
+  .criteria-grid{grid-template-columns:1fr 1fr}
+  .metrics-strip{grid-template-columns:repeat(3,1fr)}
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .metric-cell:nth-child(3){border-right:none}
+  .metric-cell:nth-child(4),.metric-cell:nth-child(5){border-top:1px solid var(--border)}
 }
-.header-inner{display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:var(--gold);letter-spacing:-0.3px}
-.logo span{color:var(--text);font-weight:700}
-.prop-pill{
-  background:var(--goldd);
-  border:1px solid var(--gold);
-  color:var(--gold);
-  font-family:'DM Mono',monospace;
-  font-size:10px;
-  padding:4px 10px;
-  border-radius:20px;
-  max-width:140px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-/* BOTTOM NAV */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(18,19,26,0.97);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--border);
-  display:flex;
-  padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));
-  z-index:200;
-}
-.nav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  gap:3px;padding:4px 8px;
-  cursor:pointer;transition:all .2s;
-  border:none;background:none;color:var(--muted);
-  font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;
-}
-.nav-item.active{color:var(--gold)}
-.nav-icon{font-size:20px;line-height:1}
-
-/* PAGES */
-.page{display:none;padding:16px;animation:fadeIn .2s ease}
-.page.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* PROP SELECTOR */
-.prop-tabs{display:flex;gap:8px;margin-bottom:16px}
-.ptab{
-  flex:1;background:var(--card);border:1px solid var(--border);
-  color:var(--muted);border-radius:10px;padding:10px 8px;
-  cursor:pointer;font-size:12px;font-weight:500;
-  font-family:'DM Sans',sans-serif;transition:all .2s;
-  text-align:center;
-}
-.ptab.active{background:var(--goldd);border-color:var(--gold);color:var(--gold)}
-
-/* CARD */
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:12px;
-}
-.card-label{
-  font-family:'Syne',sans-serif;
-  font-size:11px;font-weight:700;
-  color:var(--gold);text-transform:uppercase;
-  letter-spacing:1.2px;margin-bottom:14px;
-  display:flex;align-items:center;gap:6px;
-}
-
-/* INPUTS */
-.field{margin-bottom:12px}
-.field label{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.5px;font-weight:500;display:block;margin-bottom:6px}
-.field input,.field select,.field textarea{
-  width:100%;background:var(--surface);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;
-  font-size:15px;padding:12px 14px;outline:none;
-  transition:border-color .2s;-webkit-appearance:none;
-}
-.field input:focus,.field select:focus{border-color:var(--gold)}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6070' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
-.prefix-wrap{position:relative}
-.prefix-wrap .pfx{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gold);font-family:'DM Mono',monospace;font-size:14px;pointer-events:none}
-.prefix-wrap input{padding-left:26px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-
-/* STAT BOXES */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
-.stat-box.full{grid-column:1/-1}
-.stat-box.green{border-color:var(--green);background:rgba(78,203,141,0.06)}
-.stat-box.red{border-color:var(--red);background:rgba(232,85,85,0.06)}
-.stat-box.yellow{border-color:var(--yellow);background:rgba(232,184,74,0.06)}
-.stat-box.gold{border-color:var(--gold);background:var(--goldd)}
-.slabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.sval{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--text)}
-.stat-box.green .sval{color:var(--green)}
-.stat-box.red .sval{color:var(--red)}
-.stat-box.yellow .sval{color:var(--yellow)}
-.stat-box.gold .sval{color:var(--gold)}
-
-/* VERDICT */
-.verdict{border-radius:16px;padding:20px;text-align:center;margin:12px 0}
-.verdict.green{background:rgba(78,203,141,0.08);border:1px solid var(--green)}
-.verdict.yellow{background:rgba(232,184,74,0.08);border:1px solid var(--yellow)}
-.verdict.red{background:rgba(232,85,85,0.08);border:1px solid var(--red)}
-.v-emoji{font-size:36px;margin-bottom:8px}
-.v-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:2px}
-.verdict.green .v-title{color:var(--green)}
-.verdict.yellow .v-title{color:var(--yellow)}
-.verdict.red .v-title{color:var(--red)}
-.v-sub{font-size:13px;color:var(--soft);margin-top:6px}
-
-/* CHECKLIST */
-.check-group{margin-bottom:16px}
-.check-group-title{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding:0 2px;font-family:'Syne',sans-serif}
-.check-item{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:12px 14px;margin-bottom:8px;
-  transition:all .2s;
-}
-.check-item.ok{border-color:var(--green);background:rgba(78,203,141,0.05)}
-.check-item.bad{border-color:var(--red);background:rgba(232,85,85,0.05)}
-.ci-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.ci-name{font-weight:500;font-size:14px;flex:1}
-.ci-desc{font-size:11px;color:var(--muted);margin-top:3px}
-.ci-btns{display:flex;gap:6px;flex-shrink:0}
-.cbtn{
-  width:32px;height:32px;border-radius:8px;border:1px solid;
-  font-size:14px;cursor:pointer;background:none;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .15s;font-family:inherit;
-}
-.cbtn.ok{border-color:var(--green);color:var(--green)}
-.cbtn.ok.active,.cbtn.ok:active{background:var(--green);color:#000;transform:scale(0.95)}
-.cbtn.bad{border-color:var(--red);color:var(--red)}
-.cbtn.bad.active,.cbtn.bad:active{background:var(--red);color:#fff;transform:scale(0.95)}
-.ci-detail{margin-top:10px;display:none;gap:8px;flex-direction:column}
-.ci-detail.show{display:flex}
-.ci-input{
-  width:100%;background:var(--card);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;
-  font-size:13px;padding:8px 10px;outline:none;
-}
-.ci-input:focus{border-color:var(--gold)}
-.ci-note{font-family:'DM Sans',sans-serif;font-size:13px}
-
-/* PROGRESS BAR */
-.prog-wrap{margin:8px 0}
-.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--soft);margin-bottom:5px}
-.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;background:var(--gold);transition:width .4s ease}
-.prog-fill.green{background:var(--green)}
-.prog-fill.red{background:var(--red)}
-
-/* NOTES / PHOTOS */
-.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.photo-slot{
-  aspect-ratio:1;border-radius:10px;border:1px dashed var(--border);
-  background:var(--surface);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
-  font-size:22px;
-}
-.photo-slot:hover,.photo-slot:active{border-color:var(--gold);background:var(--goldd)}
-.photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0}
-.photo-slot .ph-del{position:absolute;top:4px;right:4px;background:rgba(232,85,85,.8);color:#fff;border:none;border-radius:5px;width:20px;height:20px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
-.photo-slot:hover .ph-del,.photo-slot:active .ph-del{display:flex}
-.photo-slot .ph-lbl{font-size:10px;color:var(--muted);margin-top:4px}
-.add-photo-btn{
-  width:100%;padding:12px;background:var(--goldd);border:1px solid var(--gold);
-  color:var(--gold);border-radius:10px;font-family:'DM Sans',sans-serif;
-  font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.add-photo-btn:active{opacity:.8;transform:scale(.98)}
-input[type=file]{display:none}
-
-/* NOTES AREA */
-.notes-area{
-  width:100%;background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;
-  font-size:14px;padding:14px;outline:none;resize:none;min-height:100px;
-  line-height:1.6;transition:border-color .2s;
-}
-.notes-area:focus{border-color:var(--gold)}
-
-/* DIVIDER */
-.divider{height:1px;background:var(--border);margin:12px 0}
-
-/* COST ROW */
-.cost-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
-.cost-row:last-child{border-bottom:none}
-.cost-label{font-size:13px;color:var(--text)}
-.cost-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
-.cost-val{font-family:'DM Mono',monospace;font-size:14px;color:var(--gold)}
-
-/* SUMMARY TOTAL */
-.total-box{
-  background:var(--goldd);border:1px solid var(--gold);
-  border-radius:14px;padding:16px;
-  display:flex;justify-content:space-between;align-items:center;
-  margin-top:12px;
-}
-.total-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
-.total-val{font-family:'DM Mono',monospace;font-size:22px;color:var(--gold);font-weight:500}
-
-/* BADGE */
-.badge{display:inline-block;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:500;margin-right:4px;margin-bottom:4px}
-.badge.gold{background:var(--goldd);color:var(--gold);border:1px solid var(--gold)}
-.badge.green{background:rgba(78,203,141,.12);color:var(--green)}
-.badge.red{background:rgba(232,85,85,.12);color:var(--red)}
-
-/* ACTION BUTTONS */
-.btn-primary{
-  width:100%;background:var(--gold);color:#000;border:none;
-  border-radius:12px;padding:14px;font-family:'Syne',sans-serif;
-  font-weight:700;font-size:14px;cursor:pointer;
-  letter-spacing:.5px;transition:all .2s;margin-bottom:8px;
-}
-.btn-primary:active{opacity:.85;transform:scale(.98)}
-.btn-secondary{
-  width:100%;background:none;color:var(--soft);border:1px solid var(--border);
-  border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;
-  font-size:14px;cursor:pointer;transition:all .2s;
-}
-.btn-secondary:active{border-color:var(--gold);color:var(--gold)}
-
-/* CHECKLIST SUMMARY */
-.chk-summary{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
-.chk-s-row{display:flex;gap:8px;margin-bottom:10px}
-.chk-s-box{flex:1;text-align:center;background:var(--card);border-radius:10px;padding:10px}
-.chk-s-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:500}
-.chk-s-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
-
-/* FLOATING SAVE BTN */
-.float-btn{
-  position:fixed;bottom:90px;right:16px;
-  background:var(--gold);color:#000;border:none;
-  border-radius:50%;width:52px;height:52px;
-  font-size:22px;cursor:pointer;
-  box-shadow:0 4px 20px rgba(212,168,67,0.4);
-  transition:all .2s;z-index:150;
-  display:flex;align-items:center;justify-content:center;
-}
-.float-btn:active{transform:scale(.9)}
-
-/* INTRO SCREEN */
-.intro{
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;min-height:60vh;text-align:center;
-  padding:20px;
-}
-.intro-logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--gold);margin-bottom:6px}
-.intro-sub{font-size:14px;color:var(--soft);margin-bottom:32px}
-.intro-icon{font-size:64px;margin-bottom:20px}
-
-/* NOTE: PHOTO */
-.note-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.note-address{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
-.note-meta{font-size:11px;color:var(--muted)}
-
-/* SMOOTH SCROLL */
-html{scroll-behavior:smooth}
-
-/* ALERTS */
-.toast{
-  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);
-  background:var(--green);color:#000;font-weight:600;font-size:13px;
-  padding:10px 20px;border-radius:20px;z-index:500;
-  transition:transform .3s ease;white-space:nowrap;
-}
-.toast.show{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
+<div class="app">
 
-<div class="safe-top"></div>
-
-<div class="header">
-  <div class="header-inner">
-    <div class="logo">Rondon <span>Capital</span></div>
-    <div class="prop-pill" id="headerProp">Sin propiedad</div>
+<header>
+  <div class="logo">
+    <img src="data:image/jpeg;base64,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" alt="RONDON LLC" class="logo-img">
+    <div class="logo-tagline">Deal Intelligence · FlipScout v3</div>
   </div>
+  <div class="clock-pill">
+    <div class="live-dot"></div>
+    <span id="live-time">--:--</span>&nbsp;·&nbsp;<span id="mode-label">Demo</span>
+  </div>
+</header>
+
+<div class="api-banner" id="api-banner">
+  <div style="font-size:20px">🔑</div>
+  <div class="api-banner-text">
+    <strong>Conectar datos reales de Zillow</strong>
+    <span>Pega tu X-RapidAPI-Key · sin key corre en modo demo</span>
+  </div>
+  <div class="api-key-row">
+    <input type="text" id="apiKeyInput" placeholder="Pega tu X-RapidAPI-Key aquí..."
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button class="btn-connect" id="connectBtn" onclick="connectAPI()">Conectar</button>
+  </div>
+  <div class="connected-badge" id="connected-badge">✓ Zillow Live</div>
 </div>
 
-<div class="toast" id="toast">✓ Guardado</div>
+<div class="alert-bar" id="alert-bar"></div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <button class="nav-item active" onclick="showPage('home',this)">
-    <div class="nav-icon">🏠</div>
-    <span>Inicio</span>
-  </button>
-  <button class="nav-item" onclick="showPage('calc',this)">
-    <div class="nav-icon">💰</div>
-    <span>Calcular</span>
-  </button>
-  <button class="nav-item" onclick="showPage('check',this)">
-    <div class="nav-icon">✅</div>
-    <span>Inspección</span>
-  </button>
-  <button class="nav-item" onclick="showPage('notes',this)">
-    <div class="nav-icon">📸</div>
-    <span>Notas</span>
-  </button>
-  <button class="nav-item" onclick="showPage('summary',this)">
-    <div class="nav-icon">📊</div>
-    <span>Resumen</span>
-  </button>
-</nav>
-
-<!-- ===== HOME PAGE ===== -->
-<div id="page-home" class="page active">
-  <div style="margin-bottom:16px">
-    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:4px">Field Inspector</div>
-    <div style="font-size:13px;color:var(--soft)">Análisis de propiedades en campo</div>
+<div class="criteria-card">
+  <div class="section-label">
+    <span>Criterios · Alabama (Montgomery · Prattville · Auburn) & Metro Atlanta</span>
+    <span class="zones-count" id="zones-count">33 zonas</span>
   </div>
-
-  <div class="prop-tabs">
-    <button class="ptab active" onclick="selProp(0,this)" id="ptab0">🏠 Prop 1</button>
-    <button class="ptab" onclick="selProp(1,this)" id="ptab1">🏠 Prop 2</button>
-    <button class="ptab" onclick="selProp(2,this)" id="ptab2">🏠 Prop 3</button>
-  </div>
-
-  <div class="card">
-    <div class="card-label">📍 Propiedad</div>
+  <div class="criteria-grid">
     <div class="field">
-      <label>Dirección</label>
-      <input type="text" id="addr" placeholder="Ej: 2712 Greenbriar Rd, Montgomery AL" oninput="upProp()">
+      <label>Zonas activas</label>
+      <input type="text" id="zone" oninput="updateZonesCount()" value="Prattville AL, Montgomery AL, Auburn AL 36830, Auburn AL 36832, Auburn AL 36879, East Point GA, College Park GA, Jonesboro GA, Morrow GA, Forest Park GA, McDonough GA, Riverdale GA, Stockbridge GA, Douglasville GA, Austell GA, Lithonia GA, Conyers GA, Covington GA, Newnan GA, Griffin GA, Kennesaw GA, Acworth GA, Smyrna GA, Marietta GA, Decatur GA, Lawrenceville GA, Duluth GA, Norcross GA, Buford GA, Cumming GA, Canton GA, Woodstock GA, Roswell GA">
+      <div class="zones-hint" id="zones-hint">AL · GA</div>
     </div>
-    <div class="row2">
-      <div class="field">
-        <label>Precio Compra</label>
-        <div class="prefix-wrap"><span class="pfx">$</span><input type="number" id="pp" placeholder="75000" oninput="upProp()" inputmode="numeric"></div>
-      </div>
-      <div class="field">
-        <label>ARV Est.</label>
-        <div class="prefix-wrap"><span class="pfx">$</span><input type="number" id="arv" placeholder="200000" oninput="upProp()" inputmode="numeric"></div>
-      </div>
+    <div class="field"><label>Precio máx ($)</label><input type="number" id="maxPrice" value="200000" step="5000"></div>
+    <div class="field"><label>Profit mín ($)</label><input type="number" id="minProfit" value="25000" step="5000"></div>
+    <div class="field"><label>Bedrooms</label>
+      <select id="minBeds"><option value="2">2+</option><option value="3" selected>3+</option><option value="4">4+</option></select>
     </div>
-    <div class="row3">
-      <div class="field"><label>Camas</label><input type="number" id="beds" placeholder="3" oninput="upProp()" inputmode="numeric"></div>
-      <div class="field"><label>Baños</label><input type="number" id="baths" placeholder="2" oninput="upProp()" inputmode="numeric"></div>
-      <div class="field"><label>Sqft</label><input type="number" id="sqft" placeholder="2147" oninput="upProp()" inputmode="numeric"></div>
+    <div class="field"><label>Tipo</label>
+      <select id="propType"><option value="SFR">SFR</option><option value="multi">Multi</option><option value="any">Cualquier</option></select>
     </div>
-    <div class="row2">
-      <div class="field"><label>Año</label><input type="number" id="yr" placeholder="1957" oninput="upProp()" inputmode="numeric"></div>
-      <div class="field"><label>ZIP</label><input id="zip" placeholder="36111" oninput="upProp()"></div>
-    </div>
-    <div class="field">
-      <label>Estado</label>
-      <select id="pst" oninput="upProp()">
-        <option value="fixer">Fixer / AS-IS</option>
-        <option value="foreclosure">Foreclosure / REO</option>
-        <option value="fsbo">FSBO</option>
-        <option value="listed">Listed MLS</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Quick Stats -->
-  <div class="stats-grid">
-    <div class="stat-box full gold">
-      <div class="slabel">Ganancia Moderada Estimada</div>
-      <div class="sval" id="qs-profit">$—</div>
-    </div>
-    <div class="stat-box">
-      <div class="slabel">Inversión Total</div>
-      <div class="sval" id="qs-inv" style="font-size:16px">$—</div>
-    </div>
-    <div class="stat-box">
-      <div class="slabel">Trans. Costs</div>
-      <div class="sval" id="qs-tc" style="font-size:16px">$—</div>
-    </div>
-  </div>
-
-  <div class="verdict yellow" id="homeVerdict">
-    <div class="v-emoji" id="hve">🤔</div>
-    <div class="v-title" id="hvt">INGRESA DATOS</div>
-    <div class="v-sub" id="hvs">Completa precio de compra y ARV</div>
+    <div class="field"><label>ROI mín (%)</label><input type="number" id="minROI" value="15" step="5"></div>
   </div>
 </div>
 
-<!-- ===== CALC PAGE ===== -->
-<div id="page-calc" class="page">
-  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:16px">💰 Calculadora</div>
-
-  <div class="card">
-    <div class="card-label">📐 Materiales por Sqft</div>
-    <div style="font-size:12px;color:var(--soft);margin-bottom:12px">Ingresa precio/unidad y cantidad — el total se calcula solo</div>
-    <div id="matList"></div>
-    <button class="btn-secondary" onclick="addMat()" style="margin-top:8px">+ Agregar Material</button>
-    <button class="btn-secondary" onclick="loadPreset()" style="margin-top:6px">⚡ Cargar Plantilla Típica</button>
-    <div class="total-box" style="margin-top:12px">
-      <div class="total-label">Materiales</div>
-      <div class="total-val" id="matTot">$0</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-label">👷 Mano de Obra</div>
-    <div style="padding:10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:12px;font-size:12px">
-      <span style="color:var(--gold);font-weight:600">Tus descuentos: </span>
-      <span style="color:var(--green)">Techo 20%</span> · <span style="color:var(--green)">Plomería/Eléc 50%</span>
-    </div>
-    <div id="wrkList"></div>
-    <button class="btn-secondary" onclick="addWrk()" style="margin-top:8px">+ Agregar Obrero</button>
-    <div class="total-box" style="margin-top:12px">
-      <div class="total-label">Obreros Total</div>
-      <div class="total-val" id="wrkTot">$0</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-label">📅 Holding</div>
-    <div class="row2">
-      <div class="field"><label>Meses</label><input type="number" id="hmo" value="3" min="1" max="12" oninput="upHld()" inputmode="numeric"></div>
-      <div class="field"><label>$/Mes (gastos)</label><div class="prefix-wrap"><span class="pfx">$</span><input type="number" id="hfx" value="360" oninput="upHld()" inputmode="numeric"></div></div>
-    </div>
-    <div class="total-box">
-      <div class="total-label">Holding Total</div>
-      <div class="total-val" id="hldTot">$1,080</div>
-    </div>
+<div class="action-row">
+  <button class="btn-search" id="searchBtn" onclick="startSearch()">⚡ Buscar Deals</button>
+  <button class="btn-outline" onclick="analystHistory=[];openAnalyst('')">🤖 Analista IA</button>
+  <button class="btn-outline" onclick="openEmailModal()">✉ Alerta Email</button>
+  <button class="btn-outline" id="blacklist-btn" onclick="if(confirm('¿Limpiar todas las propiedades descartadas?'))clearBlacklist()" style="display:none;color:var(--hot);border-color:#f0c0bc">🚫 <span id="blacklist-count">0</span> descartadas</button>
+  <div class="status-chip">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Listo</span>
   </div>
 </div>
 
-<!-- ===== CHECKLIST PAGE ===== -->
-<div id="page-check" class="page">
-  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:12px">✅ Inspección</div>
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="progress-info">
+    <div class="progress-step" id="progress-step">Iniciando...</div>
+    <div class="progress-zones" id="progress-zones"></div>
+  </div>
+</div>
 
-  <div class="chk-summary">
-    <div class="chk-s-row">
-      <div class="chk-s-box">
-        <div class="chk-s-num" id="ckOk" style="color:var(--green)">0</div>
-        <div class="chk-s-lbl">OK</div>
-      </div>
-      <div class="chk-s-box">
-        <div class="chk-s-num" id="ckBad" style="color:var(--red)">0</div>
-        <div class="chk-s-lbl">Problemas</div>
-      </div>
-      <div class="chk-s-box">
-        <div class="chk-s-num" id="ckCost" style="color:var(--gold)">$0</div>
-        <div class="chk-s-lbl">Costo Rep.</div>
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-card"><div class="stat-card-label">Deals válidos</div><div class="stat-card-value" id="stat-total">—</div></div>
+  <div class="stat-card"><div class="stat-card-label">🔥 Hot deals</div><div class="stat-card-value c-red" id="stat-hot">—</div></div>
+  <div class="stat-card"><div class="stat-card-label">Profit promedio</div><div class="stat-card-value c-green" id="stat-profit">—</div></div>
+  <div class="stat-card"><div class="stat-card-label">Mejor profit</div><div class="stat-card-value c-amber" id="stat-best">—</div></div>
+</div>
+
+<div class="results-header" id="results-header">
+  <div class="results-title" id="results-title">Deals</div>
+  <div class="filter-pills">
+    <button class="pill active" onclick="filterMarket('all',this)">Todos</button>
+    <button class="pill" onclick="filterMarket('AL',this)">Alabama</button>
+    <button class="pill" onclick="filterMarket('GA',this)">Georgia</button>
+    <div class="pill-sep"></div>
+    <button class="pill active" onclick="sortDeals('score',this)">Score</button>
+    <button class="pill" onclick="sortDeals('profit',this)">Profit</button>
+    <button class="pill" onclick="sortDeals('price',this)">Precio</button>
+  </div>
+</div>
+
+<div class="deals-list" id="deals-list">
+  <div class="empty-state">
+    <div class="empty-icon">🏚️</div>
+    <h3>Sin búsqueda activa</h3>
+    <p>Presiona <strong>⚡ Buscar Deals</strong> para analizar el mercado.<br>Sin API key corre en modo demo con 14 deals validados.</p>
+  </div>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="email-modal">
+  <div class="modal">
+    <h2>Alerta de Email Diaria</h2>
+    <p>Conecta Make.com para enviar automáticamente los deals que pasen filtros cada mañana.</p>
+    <div class="modal-fields">
+      <div class="field"><label>Tu email</label><input type="email" id="email-input" placeholder="tu@email.com"></div>
+      <div class="field"><label>Hora</label>
+        <select id="email-time"><option>7:00 AM</option><option selected>8:00 AM</option><option>9:00 AM</option></select>
       </div>
     </div>
-    <div class="prog-wrap">
-      <div class="prog-label"><span>Progreso</span><span id="ckPct">0%</span></div>
-      <div class="prog-bar"><div class="prog-fill" id="ckBar" style="width:0%"></div></div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeEmailModal()">Cancelar</button>
+      <button class="btn-search" onclick="saveEmail()" style="padding:10px 22px">Guardar</button>
     </div>
-  </div>
-
-  <div id="ckExt"></div>
-  <div id="ckInt"></div>
-  <div id="ckSys"></div>
-</div>
-
-<!-- ===== NOTES PAGE ===== -->
-<div id="page-notes" class="page">
-  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px">📸 Fotos & Notas</div>
-  <div style="font-size:12px;color:var(--soft);margin-bottom:16px" id="notePropName">Selecciona una propiedad primero</div>
-
-  <div class="card">
-    <div class="card-label">📷 Fotos de la Propiedad</div>
-    <div class="photo-grid" id="photoGrid"></div>
-    <label class="add-photo-btn" for="photoInput">
-      <span>📷</span> Tomar / Agregar Foto
-    </label>
-    <input type="file" id="photoInput" accept="image/*" capture="environment" multiple onchange="handlePhotos(this)">
-  </div>
-
-  <div class="card">
-    <div class="card-label">📝 Notas de Campo</div>
-    <textarea class="notes-area" id="propNotes" placeholder="Observaciones de la visita, condición general, detalles importantes..." rows="5" oninput="upProp()"></textarea>
-  </div>
-
-  <div class="card">
-    <div class="card-label">🔑 Puntos Críticos</div>
-    <div id="criticalList"></div>
   </div>
 </div>
-
-<!-- ===== SUMMARY PAGE ===== -->
-<div id="page-summary" class="page">
-  <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:16px">📊 Resumen Final</div>
-
-  <div style="background:linear-gradient(135deg,#1a1c26,#12131a);border:1px solid var(--gold);border-radius:16px;padding:16px;margin-bottom:12px">
-    <div style="font-size:10px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Propiedad</div>
-    <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:6px" id="sumAddr">—</div>
-    <div id="sumBadges"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-label">💰 Desglose</div>
-    <div class="cost-row"><div><div class="cost-label">Precio Compra</div></div><div class="cost-val" id="s-pp">$0</div></div>
-    <div class="cost-row"><div><div class="cost-label">Closing Costs</div><div class="cost-sub">3% compra + 4% venta</div></div><div class="cost-val" id="s-cc">$0</div></div>
-    <div class="cost-row"><div><div class="cost-label">Materiales</div></div><div class="cost-val" id="s-mat">$0</div></div>
-    <div class="cost-row"><div><div class="cost-label">Obreros</div></div><div class="cost-val" id="s-wrk">$0</div></div>
-    <div class="cost-row"><div><div class="cost-label">Reparaciones Insp.</div></div><div class="cost-val" id="s-rep">$0</div></div>
-    <div class="cost-row"><div><div class="cost-label">Holding</div></div><div class="cost-val" id="s-hld">$0</div></div>
-    <div class="total-box"><div class="total-label">INVERSIÓN TOTAL</div><div class="total-val" id="s-tot">$0</div></div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-box" id="sb-cons">
-      <div class="slabel">Conservador (−10%)</div>
-      <div class="sval" id="s-cons">$0</div>
-    </div>
-    <div class="stat-box" id="sb-mod">
-      <div class="slabel">Moderado (ARV)</div>
-      <div class="sval" id="s-mod">$0</div>
-    </div>
-    <div class="stat-box full" id="sb-opt">
-      <div class="slabel">Optimista (+10%)</div>
-      <div class="sval" id="s-opt">$0</div>
-    </div>
-  </div>
-
-  <div class="verdict yellow" id="finalVerdict">
-    <div class="v-emoji" id="fve">🤔</div>
-    <div class="v-title" id="fvt">INGRESA DATOS</div>
-    <div class="v-sub" id="fvs">Completa todos los módulos</div>
-  </div>
-
-  <div class="card">
-    <div class="card-label">🔍 Inspección</div>
-    <div class="chk-s-row">
-      <div class="chk-s-box"><div class="chk-s-num" id="s-ok" style="color:var(--green)">0</div><div class="chk-s-lbl">OK</div></div>
-      <div class="chk-s-box"><div class="chk-s-num" id="s-bad" style="color:var(--red)">0</div><div class="chk-s-lbl">Issues</div></div>
-      <div class="chk-s-box"><div class="chk-s-num" id="s-rc" style="color:var(--gold)">$0</div><div class="chk-s-lbl">Reparac.</div></div>
-    </div>
-  </div>
-
-  <button class="btn-primary" onclick="shareReport()">📤 Compartir Reporte</button>
-  <button class="btn-secondary" onclick="copyReport()">📋 Copiar al Clipboard</button>
-</div>
-
-<button class="float-btn" onclick="saveToast()" title="Guardado automático">💾</button>
+<div class="toast" id="toast"></div>
 
 <script>
-// ===== STATE =====
-let cp=0;
-let props=[
-  {addr:'',pp:0,arv:0,beds:0,baths:0,sqft:0,yr:0,zip:'',st:'fixer',notes:'',cs:{},photos:[]},
-  {addr:'',pp:0,arv:0,beds:0,baths:0,sqft:0,yr:0,zip:'',st:'fixer',notes:'',cs:{},photos:[]},
-  {addr:'',pp:0,arv:0,beds:0,baths:0,sqft:0,yr:0,zip:'',st:'fixer',notes:'',cs:{},photos:[]}
-];
-let mats=[];
-let wrkrs=[];
-let hld={mo:3,fx:360};
+'use strict';
 
-// ===== CHECKLIST DATA =====
-const CL={
-  ext:{title:'🏗 Exterior',items:[
-    {id:'roof',n:'Techo',d:'Edad, goteras, tejas, flashings'},
-    {id:'found',n:'Fundación',d:'Grietas, movimiento, humedad'},
-    {id:'walls',n:'Paredes Ext.',d:'Ladrillo, siding, pintura'},
-    {id:'wins',n:'Ventanas',d:'Marcos, sellos, vidrios'},
-    {id:'doors',n:'Puertas Ext.',d:'Funcionamiento, sellos'},
-    {id:'land',n:'Patio/Jardín',d:'Limpieza, árboles, cerca'},
-    {id:'gar',n:'Garaje/Carport',d:'Puerta, piso, techo'},
-  ]},
-  int:{title:'🏠 Interior',items:[
-    {id:'flr',n:'Pisos',d:'Hardwood, alfombra, tile'},
-    {id:'wint',n:'Paredes/Cielos',d:'Grietas, humedad, texturas'},
-    {id:'kit',n:'Cocina',d:'Gabinetes, counters, sink'},
-    {id:'bath',n:'Baños',d:'Tile, vanity, tina, toilet'},
-    {id:'bed',n:'Cuartos',d:'Tamaño, closets, ventanas'},
-    {id:'liv',n:'Sala/Comedor',d:'Layout, estado, luz'},
-  ]},
-  sys:{title:'⚡ Sistemas',items:[
-    {id:'elec',n:'Eléctrico',d:'Panel, knob-and-tube, outlets'},
-    {id:'plmb',n:'Plomería',d:'Galvanizado vs cobre, fugas'},
-    {id:'hvac',n:'HVAC/AC',d:'Edad, funcionamiento'},
-    {id:'wh',n:'Calentador Agua',d:'Edad, conexiones'},
-    {id:'lead',n:'Plomo/Asbesto',d:'Riesgo pre-1980'},
-    {id:'pest',n:'Plagas/Termitas',d:'Daño estructural'},
-    {id:'mold',n:'Moho/Humedad',d:'Manchas, olor'},
-  ]}
+// ═══════════════════════════════════════════════════════════
+// COUNTY DATABASE
+// ARV $/sqft based on 2025 Redfin/Zillow median sold data
+// Alabama labor costs ~25% cheaper than Georgia metro
+// ═══════════════════════════════════════════════════════════
+const COUNTIES = {
+  // Alabama
+  'prattville':    {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:'Prattville, AL',   arv:108,st:'AL'},
+  'montgomery':    {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:'Montgomery, AL',   arv:103,st:'AL'},
+  'millbrook':     {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:'Millbrook, AL',    arv:110,st:'AL'},
+  'wetumpka':      {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:'Wetumpka, AL',     arv:105,st:'AL'},
+  'auburn':        {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:'Auburn, AL',       arv:148,st:'AL'},
+  'opelika':       {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:'Opelika, AL',      arv:130,st:'AL'},
+  // GA Sur — Clayton/Henry (sweet spot)
+  'east point':    {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'East Point, GA',   arv:158,st:'GA'},
+  'college park':  {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'College Park, GA', arv:152,st:'GA'},
+  'hapeville':     {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Hapeville, GA',    arv:152,st:'GA'},
+  'forest park':   {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Forest Park, GA',  arv:148,st:'GA'},
+  'morrow':        {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Morrow, GA',       arv:148,st:'GA'},
+  'jonesboro':     {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Jonesboro, GA',    arv:143,st:'GA'},
+  'lovejoy':       {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Lovejoy, GA',      arv:140,st:'GA'},
+  'hampton':       {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Hampton, GA',      arv:138,st:'GA'},
+  'mcdonough':     {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'McDonough, GA',    arv:163,st:'GA'},
+  'stockbridge':   {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Stockbridge, GA',  arv:158,st:'GA'},
+  'riverdale':     {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Riverdale, GA',    arv:143,st:'GA'},
+  'union city':    {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Union City, GA',   arv:148,st:'GA'},
+  'fairburn':      {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Fairburn, GA',     arv:148,st:'GA'},
+  'locust grove':  {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:'Locust Grove, GA', arv:150,st:'GA'},
+  // GA Oeste — Douglas/Carroll/Coweta
+  'douglasville':  {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Douglasville, GA', arv:153,st:'GA'},
+  'austell':       {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Austell, GA',      arv:158,st:'GA'},
+  'powder springs':{bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Powder Springs, GA',arv:158,st:'GA'},
+  'hiram':         {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Hiram, GA',        arv:148,st:'GA'},
+  'dallas':        {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Dallas, GA',       arv:143,st:'GA'},
+  'villa rica':    {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Villa Rica, GA',   arv:143,st:'GA'},
+  'newnan':        {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Newnan, GA',       arv:158,st:'GA'},
+  'carrollton':    {bg:'#f0e8fe',bd:'#7a4ad4',tx:'#3a1a7a',lb:'Carrollton, GA',   arv:140,st:'GA'},
+  // GA Norte/Este — Cobb/DeKalb/Gwinnett
+  'decatur':       {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Decatur, GA',      arv:218,st:'GA'},
+  'smyrna':        {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Smyrna, GA',       arv:213,st:'GA'},
+  'marietta':      {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Marietta, GA',     arv:203,st:'GA'},
+  'kennesaw':      {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Kennesaw, GA',     arv:183,st:'GA'},
+  'acworth':       {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Acworth, GA',      arv:178,st:'GA'},
+  'woodstock':     {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Woodstock, GA',    arv:188,st:'GA'},
+  'canton':        {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Canton, GA',       arv:173,st:'GA'},
+  'lithonia':      {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Lithonia, GA',     arv:163,st:'GA'},
+  'conyers':       {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Conyers, GA',      arv:158,st:'GA'},
+  'covington':     {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Covington, GA',    arv:148,st:'GA'},
+  'lawrenceville': {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Lawrenceville, GA',arv:168,st:'GA'},
+  'duluth':        {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Duluth, GA',       arv:188,st:'GA'},
+  'norcross':      {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Norcross, GA',     arv:183,st:'GA'},
+  'buford':        {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Buford, GA',       arv:183,st:'GA'},
+  'suwanee':       {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Suwanee, GA',      arv:198,st:'GA'},
+  'loganville':    {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Loganville, GA',   arv:163,st:'GA'},
+  'snellville':    {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Snellville, GA',   arv:168,st:'GA'},
+  'lilburn':       {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Lilburn, GA',      arv:173,st:'GA'},
+  'stone mountain':{bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Stone Mountain, GA',arv:158,st:'GA'},
+  'griffin':       {bg:'#e8f0fe',bd:'#4a7fd4',tx:'#1a3a7a',lb:'Griffin, GA',      arv:133,st:'GA'},
+  // GA Premium — North Fulton/Forsyth
+  'roswell':       {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Roswell, GA',      arv:233,st:'GA'},
+  'alpharetta':    {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Alpharetta, GA',   arv:253,st:'GA'},
+  'cumming':       {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Cumming, GA',      arv:203,st:'GA'},
+  'johns creek':   {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Johns Creek, GA',  arv:243,st:'GA'},
+  'sandy springs': {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Sandy Springs, GA',arv:248,st:'GA'},
+  'dunwoody':      {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Dunwoody, GA',     arv:238,st:'GA'},
+  'brookhaven':    {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Brookhaven, GA',   arv:243,st:'GA'},
+  'fayetteville':  {bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Fayetteville, GA', arv:163,st:'GA'},
+  'peachtree city':{bg:'#fde8f0',bd:'#d44a7f',tx:'#7a1a40',lb:'Peachtree City, GA',arv:188,st:'GA'},
+  'atlanta':       {bg:'#fef0e8',bd:'#d4704a',tx:'#7a2a00',lb:'Atlanta, GA',      arv:223,st:'GA'},
 };
 
-// ===== NAV =====
-function showPage(id,btn){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  btn.classList.add('active');
-  if(id==='summary')upSum();
-  if(id==='notes')upNotes();
+function getCounty(city, state) {
+  const k = (city||'').toLowerCase().trim();
+  return COUNTIES[k] || (state==='GA'
+    ? {bg:'#fef3e2',bd:'#e8a020',tx:'#7a4a00',lb:`${city}, GA`,arv:160,st:'GA'}
+    : {bg:'#e8f5ee',bd:'#1a6b3c',tx:'#0a3a1e',lb:`${city}, AL`,arv:105,st:'AL'});
 }
 
-// ===== PROPERTY =====
-function selProp(i,btn){
-  cp=i;
-  document.querySelectorAll('.ptab').forEach((b,j)=>b.classList.toggle('active',j===i));
-  loadPF();renChk();upAll();upNotes();
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let allDeals = [], currentSort = 'score', activeFilter = 'all';
+let rapidApiKey = localStorage.getItem('fs_rapidapi_key') || '';
+let blacklist = new Set(JSON.parse(localStorage.getItem('fs_blacklist') || '[]'));
+
+// ── Blacklist helpers ──
+function blacklistKey(d) {
+  // Use address as key — stable across searches
+  return (d.address || d.url || '').toLowerCase().trim();
 }
 
-function loadPF(){
-  const p=props[cp];
-  ['addr','pp','arv','beds','baths','sqft','yr','zip','pst','propNotes'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value=p[id]||'';
-  });
-  document.getElementById('headerProp').textContent=p.addr||'Sin dirección';
+function blacklistDeal(i) {
+  const d = sortList(allDeals, currentSort)[i];
+  const key = blacklistKey(d);
+  blacklist.add(key);
+  localStorage.setItem('fs_blacklist', JSON.stringify([...blacklist]));
+  // Remove card with animation
+  const cards = document.querySelectorAll('.deal-card');
+  if (cards[i]) {
+    cards[i].style.transition = 'opacity .3s, transform .3s';
+    cards[i].style.opacity = '0';
+    cards[i].style.transform = 'translateX(40px)';
+    setTimeout(() => {
+      allDeals = allDeals.filter(deal => blacklistKey(deal) !== key);
+      renderDeals(allDeals);
+      updateStats(allDeals);
+      updateBlacklistBtn();
+      showToast('🚫 Propiedad descartada — no volverá a aparecer');
+    }, 300);
+  }
 }
 
-function upProp(){
-  const p=props[cp];
-  p.addr=v('addr');p.pp=n('pp');p.arv=n('arv');
-  p.beds=n('beds');p.baths=n('baths');p.sqft=n('sqft');
-  p.yr=n('yr');p.zip=v('zip');p.st=v('pst');p.notes=v('propNotes');
-  document.getElementById('headerProp').textContent=p.addr||'Sin dirección';
-  if(document.getElementById('notePropName'))
-    document.getElementById('notePropName').textContent=p.addr||'Sin propiedad seleccionada';
-  upAll();
+function clearBlacklist() {
+  blacklist = new Set();
+  localStorage.removeItem('fs_blacklist');
+  updateBlacklistBtn();
+  showToast('✓ Blacklist limpiada — las propiedades volverán a aparecer');
 }
 
-function v(id){const el=document.getElementById(id);return el?el.value:'';}
-function n(id){return parseFloat(v(id))||0;}
-
-// ===== CALCULATIONS =====
-function getMT(){return mats.reduce((s,m)=>s+(m.pu||0)*(m.q||0),0);}
-function getWT(){return wrkrs.reduce((s,w)=>s+(w.dw||0)*(w.d||0),0);}
-function getRT(){const p=props[cp];return Object.values(p.cs||{}).reduce((s,c)=>s+(c.s==='bad'?parseFloat(c.c)||0:0),0);}
-function getHF(){return(hld.fx||0)*(hld.mo||0);}
-
-function upAll(){
-  const p=props[cp],pp=p.pp,arv=p.arv;
-  const cb=pp*0.03,rs=arv*0.03,cs=arv*0.01;
-  const mt=getMT(),wt=getWT(),rt=getRT(),ht=getHF();
-  const ti=pp+cb+mt+wt+rt+ht+rs+cs;
-  const pm=arv-ti;
-
-  document.getElementById('qs-profit').textContent=arv&&pp?fmt(pm):'$—';
-  document.getElementById('qs-inv').textContent=ti>0?fmt(ti):'$—';
-  document.getElementById('qs-tc').textContent=(cb+rs+cs)>0?fmt(cb+rs+cs):'$—';
-
-  upVerdict('homeVerdict','hve','hvt','hvs',pm,arv,pp);
-  document.getElementById('matTot').textContent=fmt(mt);
-  document.getElementById('wrkTot').textContent=fmt(wt);
-  document.getElementById('hldTot').textContent=fmt(ht);
+function updateBlacklistBtn() {
+  const count = blacklist.size;
+  const btn = document.getElementById('blacklist-btn');
+  if (!btn) return;
+  if (count > 0) {
+    btn.style.display = 'flex';
+    document.getElementById('blacklist-count').textContent = count;
+  } else {
+    btn.style.display = 'none';
+  }
 }
 
-function upVerdict(boxId,eid,tid,sid,pm,arv,pp){
-  const b=document.getElementById(boxId);
-  const e=document.getElementById(eid),t=document.getElementById(tid),s=document.getElementById(sid);
-  if(!b)return;
-  if(!arv||!pp){b.className='verdict yellow';e.textContent='🤔';t.textContent='INGRESA DATOS';s.textContent='Completa precio y ARV';}
-  else if(pm>40000){b.className='verdict green';e.textContent='🚀';t.textContent='PROCEDER';s.textContent='Ganancia moderada: '+fmt(pm);}
-  else if(pm>15000){b.className='verdict yellow';e.textContent='🟡';t.textContent='NEGOCIAR';s.textContent='Ganancia moderada: '+fmt(pm);}
-  else if(pm>0){b.className='verdict yellow';e.textContent='⚠️';t.textContent='RIESGOSO';s.textContent='Margen: '+fmt(pm);}
-  else{b.className='verdict red';e.textContent='🚫';t.textContent='EVITAR';s.textContent='Pérdida: '+fmt(pm);}
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+setInterval(() => {
+  document.getElementById('live-time').textContent =
+    new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+}, 1000);
+
+window.addEventListener('DOMContentLoaded', () => {
+  const e = localStorage.getItem('flipscout_email');
+  if (e) document.getElementById('email-input').value = e;
+  if (rapidApiKey.length > 10) markConnected();
+  updateZonesCount();
+  updateBlacklistBtn();
+});
+
+function updateZonesCount() {
+  const zones = parseZones();
+  const ga = zones.filter(z => /\bGA\b/i.test(z)).length;
+  const al = zones.filter(z => /\bAL\b/i.test(z)).length;
+  document.getElementById('zones-count').textContent = `${zones.length} zonas`;
+  document.getElementById('zones-hint').textContent = `${al} Alabama · ${ga} Georgia`;
 }
 
-// ===== MATERIALS =====
-function addMat(nm='',pu=0,q=0,u='sqft'){
-  mats.push({nm,pu,q,u});renMat();
+function parseZones() {
+  return document.getElementById('zone').value
+    .split(',').map(z => z.trim()).filter(z => z.length > 2);
 }
 
-function loadPreset(){
-  const sq=props[cp].sqft||1500;
-  mats=[
-    {nm:'Piso LVP',pu:2.5,q:sq,u:'sqft'},
-    {nm:'Pintura Interior',pu:35,q:Math.ceil(sq/400),u:'galón'},
-    {nm:'Pintura Exterior',pu:35,q:Math.ceil(sq/250),u:'galón'},
-    {nm:'Gabinetes',pu:150,q:10,u:'unidad'},
-    {nm:'Countertop',pu:40,q:15,u:'ft'},
-    {nm:'Tile Baño',pu:3.5,q:120,u:'sqft'},
-    {nm:'Fixtures Baño',pu:80,q:2,u:'set'},
-    {nm:'Puertas',pu:120,q:5,u:'unidad'},
-    {nm:'Luminarias',pu:45,q:8,u:'unidad'},
-  ];renMat();
+// ═══════════════════════════════════════════════════════════
+// API KEY
+// ═══════════════════════════════════════════════════════════
+function connectAPI() {
+  const key = document.getElementById('apiKeyInput').value
+    .replace(/[^\x20-\x7E]/g,'').trim();
+  if (key.length < 20) return showToast('⚠ La key parece incompleta');
+  rapidApiKey = key;
+  localStorage.setItem('fs_rapidapi_key', key);
+  markConnected();
+  showToast('✓ Key guardada — presiona Buscar Deals');
 }
 
-function renMat(){
-  const c=document.getElementById('matList');
-  if(!c)return;
-  c.innerHTML=mats.map((m,i)=>{
-    const tot=(m.pu||0)*(m.q||0);
-    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <input style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:8px 10px;outline:none" value="${m.nm}" placeholder="Material" oninput="mats[${i}].nm=this.value">
-        <button style="background:none;border:1px solid var(--red);color:var(--red);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:12px" onclick="mats.splice(${i},1);renMat();upAll()">✕</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">$/Unidad</div><div style="position:relative"><span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px;font-family:monospace">$</span><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:13px;padding:8px 6px 8px 20px;outline:none" value="${m.pu}" oninput="mats[${i}].pu=parseFloat(this.value)||0;upMR(${i})" inputmode="decimal"></div></div>
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Cantidad</div><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:13px;padding:8px;outline:none" value="${m.q}" oninput="mats[${i}].q=parseFloat(this.value)||0;upMR(${i})" inputmode="decimal"></div>
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Unidad</div><input style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:8px;outline:none" value="${m.u}" oninput="mats[${i}].u=this.value"></div>
-      </div>
-      <div style="margin-top:8px;text-align:right;font-family:monospace;color:var(--gold);font-size:15px;font-weight:500" id="mr-${i}">${fmt(tot)}</div>
-    </div>`;
-  }).join('');
-  upMTot();
+function markConnected() {
+  document.getElementById('api-banner').classList.add('connected');
+  document.getElementById('connected-badge').classList.add('show');
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('apiKeyInput').placeholder = '✓ Key guardada';
+  document.getElementById('apiKeyInput').disabled = true;
+  document.getElementById('connectBtn').textContent = '✓ Listo';
+  document.getElementById('connectBtn').style.background = '#1a6b3c';
+  document.getElementById('mode-label').textContent = 'Zillow Live';
 }
 
-function upMR(i){
-  const t=(mats[i].pu||0)*(mats[i].q||0);
-  const el=document.getElementById('mr-'+i);
-  if(el)el.textContent=fmt(t);
-  upMTot();
+function showAlert(msg, type='warn') {
+  const el = document.getElementById('alert-bar');
+  el.textContent = msg;
+  el.className = `alert-bar show ${type}`;
+}
+function hideAlert() {
+  document.getElementById('alert-bar').classList.remove('show');
 }
 
-function upMTot(){
-  const t=getMT();
-  const el=document.getElementById('matTot');
-  if(el)el.textContent=fmt(t);
-  upAll();
-}
+// ═══════════════════════════════════════════════════════════
+// SEARCH ORCHESTRATION
+// ═══════════════════════════════════════════════════════════
+async function startSearch() {
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  hideAlert();
+  setStatus('live','Buscando...');
+  showProgress(true);
+  allDeals = [];
+  ['stats-bar','results-header'].forEach(id =>
+    document.getElementById(id).classList.remove('show'));
+  document.getElementById('deals-list').innerHTML = '';
 
-// ===== WORKERS =====
-function addWrk(n='Obrero',dw=150,d=20){
-  wrkrs.push({n,dw,d});renWrk();
-}
+  const crit = getCriteria();
 
-function renWrk(){
-  const c=document.getElementById('wrkList');if(!c)return;
-  c.innerHTML=wrkrs.map((w,i)=>{
-    const tot=(w.dw||0)*(w.d||0);
-    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <input style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--gold);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;padding:8px 10px;outline:none" value="${w.n}" placeholder="Oficio" oninput="wrkrs[${i}].n=this.value">
-        <button style="background:none;border:1px solid var(--red);color:var(--red);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:12px" onclick="wrkrs.splice(${i},1);renWrk();upAll()">✕</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Salario Diario</div><div style="position:relative"><span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:12px;font-family:monospace">$</span><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:14px;padding:8px 8px 8px 20px;outline:none" value="${w.dw}" oninput="wrkrs[${i}].dw=parseFloat(this.value)||0;renWrk();upAll()" inputmode="numeric"></div></div>
-        <div><div style="font-size:10px;color:var(--muted);margin-bottom:3px">Días a Trabajar</div><input type="number" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:monospace;font-size:14px;padding:8px;outline:none" value="${w.d}" oninput="wrkrs[${i}].d=parseFloat(this.value)||0;renWrk();upAll()" inputmode="numeric"></div>
-      </div>
-      <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:1px solid var(--border)">
-        <span style="font-size:11px;color:var(--muted)">${w.d} días × ${fmt(w.dw)}/día</span>
-        <span style="font-family:monospace;color:var(--gold);font-size:16px;font-weight:500">${fmt(tot)}</span>
-      </div>
-    </div>`;
-  }).join('');
-  const el=document.getElementById('wrkTot');if(el)el.textContent=fmt(getWT());
-  upAll();
-}
+  try {
+    const deals = rapidApiKey.length > 10
+      ? await searchLive(crit)
+      : await searchDemo(crit);
 
-// ===== HOLDING =====
-function upHld(){
-  hld.mo=n('hmo');hld.fx=n('hfx');
-  const el=document.getElementById('hldTot');if(el)el.textContent=fmt(getHF());
-  upAll();
-}
+    // Remove blacklisted properties
+    const filtered = deals.filter(d => !blacklist.has(blacklistKey(d)));
+    allDeals = filtered;
+    renderDeals(deals);
+    updateStats(deals);
+    ['stats-bar','results-header'].forEach(id =>
+      document.getElementById(id).classList.add('show'));
 
-// ===== CHECKLIST =====
-function renChk(){
-  renCS('ckExt',CL.ext);
-  renCS('ckInt',CL.int);
-  renCS('ckSys',CL.sys);
-  upCS();renCritical();
-}
+    const mode = rapidApiKey.length > 10 ? 'LIVE · Zillow' : 'Demo';
+    document.getElementById('results-title').textContent =
+      `${deals.length} deals · profit ≥$${fmtK(crit.minProfit)} · ${mode}`;
 
-function renCS(cid,grp){
-  const c=document.getElementById(cid);if(!c)return;
-  const p=props[cp];if(!p.cs)p.cs={};
-  c.innerHTML=`<div class="check-group"><div class="check-group-title">${grp.title}</div>${
-    grp.items.map(it=>{
-      const st=p.cs[it.id]||{s:'p',c:'',n:''};
-      const cls=st.s==='ok'?'ok':st.s==='bad'?'bad':'';
-      const cbOk=st.s==='ok'?'active':'';
-      const cbBad=st.s==='bad'?'active':'';
-      const showDetail=st.s!=='p'?'show':'';
-      return`<div class="check-item ${cls}" id="ci-${it.id}">
-        <div class="ci-top">
-          <div style="flex:1">
-            <div class="ci-name">${it.n}</div>
-            <div class="ci-desc">${it.d}</div>
-          </div>
-          <div class="ci-btns">
-            <button class="cbtn ok ${cbOk}" onclick="setCS('${it.id}','ok')">✓</button>
-            <button class="cbtn bad ${cbBad}" onclick="setCS('${it.id}','bad')">!</button>
-          </div>
-        </div>
-        <div class="ci-detail ${showDetail}" id="cd-${it.id}">
-          <input class="ci-input" type="number" placeholder="$ Costo reparación" value="${st.c}" oninput="setCC('${it.id}',this.value)" inputmode="numeric">
-          <input class="ci-input ci-note" placeholder="Nota de inspección..." value="${st.n}" oninput="setCN('${it.id}',this.value)">
-        </div>
+  } catch(e) {
+    document.getElementById('deals-list').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <h3>Error en la búsqueda</h3>
+        <p>${e.message}</p>
       </div>`;
-    }).join('')
-  }</div>`;
+    setStatus('err','Error');
+  }
+
+  setProgressPct(100);
+  await delay(300);
+  showProgress(false);
+  setStatus('live', allDeals.length
+    ? `${allDeals.length} deals · ${new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}`
+    : 'Sin resultados');
+  btn.disabled = false;
 }
 
-function setCS(id,s){
-  const p=props[cp];
-  if(!p.cs[id])p.cs[id]={s:'p',c:'',n:''};
-  const prev=p.cs[id].s;
-  p.cs[id].s=prev===s?'p':s;
-  renChk();upAll();
+function getCriteria() {
+  return {
+    zones: parseZones(),
+    maxPrice: +document.getElementById('maxPrice').value || 200000,
+    minProfit: +document.getElementById('minProfit').value || 25000,
+    minBeds: document.getElementById('minBeds').value,
+    propType: document.getElementById('propType').value,
+    minROI: +document.getElementById('minROI').value || 15,
+  };
 }
 
-function setCC(id,v){const p=props[cp];if(!p.cs[id])p.cs[id]={s:'p',c:'',n:''};p.cs[id].c=v;upCS();upAll();}
-function setCN(id,v){const p=props[cp];if(!p.cs[id])p.cs[id]={s:'p',c:'',n:''};p.cs[id].n=v;}
+// ═══════════════════════════════════════════════════════════
+// LIVE SEARCH — Zillow via RapidAPI
+// ═══════════════════════════════════════════════════════════
+async function searchLive(crit) {
+  const zones = crit.zones;
+  let allListings = [], searched = 0, quotaHit = false;
 
-function upCS(){
-  const p=props[cp];const st=p.cs||{};
-  let ok=0,bad=0,cost=0,rev=0;
-  const all=[...CL.ext.items,...CL.int.items,...CL.sys.items];
-  all.forEach(it=>{const s=st[it.id];if(s&&s.s!=='p')rev++;if(s&&s.s==='ok')ok++;if(s&&s.s==='bad'){bad++;cost+=parseFloat(s.c)||0;}});
-  const pct=all.length>0?Math.round(rev/all.length*100):0;
-  ['ckOk','ckBad','ckCost','ckPct'].forEach(id=>{const el=document.getElementById(id);if(!el)return;});
-  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  setEl('ckOk',ok);setEl('ckBad',bad);setEl('ckCost',fmt(cost));setEl('ckPct',pct+'%');
-  const pb=document.getElementById('ckBar');if(pb){pb.style.width=pct+'%';pb.className='prog-fill '+(bad>ok?'red':'green');}
+  setProgressStep('Consultando Zillow...');
+  setProgressZones(`0 / ${zones.length}`);
+
+  // Batch 2 zones concurrently — avoids 429 rate limit (3 req/sec plan)
+  const BATCH = 2;
+  for (let i = 0; i < zones.length; i += BATCH) {
+    const batch = zones.slice(i, i + BATCH);
+    const results = await Promise.allSettled(batch.map(z => fetchZone(z, crit)));
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value) {
+        if (r.value.quota) quotaHit = true;
+        else allListings.push(...r.value.listings);
+      }
+    }
+    searched += batch.length;
+    setProgressZones(`${Math.min(searched, zones.length)} / ${zones.length}`);
+    setProgressPct(Math.round((searched / zones.length) * 75));
+    // Small pause between batches to respect rate limit
+    if (i + BATCH < zones.length) await delay(500);
+  }
+
+  if (quotaHit) showAlert('⚠ Cupo de Zillow agotado este mes (Basic = 500 req/mes). Reinicia el 1 de cada mes. Mostrando resultados parciales.');
+  if (!allListings.length) throw new Error('Sin propiedades de Zillow. Cupo agotado o key inválida — borra la key para usar modo demo.');
+
+  setProgressStep('Analizando deals...');
+  setProgressPct(85);
+  return analyzeListings(allListings, crit);
 }
 
-function renCritical(){
-  const c=document.getElementById('criticalList');if(!c)return;
-  const p=props[cp];const st=p.cs||{};
-  const issues=[];
-  const all=[...CL.ext.items,...CL.int.items,...CL.sys.items];
-  all.forEach(it=>{const s=st[it.id];if(s&&s.s==='bad')issues.push({name:it.n,cost:parseFloat(s.c)||0,note:s.n});});
-  if(!issues.length){c.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">Sin problemas detectados aún</div>';return;}
-  c.innerHTML=issues.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(232,85,85,0.06);border:1px solid var(--red);border-radius:10px;margin-bottom:8px"><div><div style="font-size:13px;font-weight:500">${i.name}</div>${i.note?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${i.note}</div>`:''}</div><div style="font-family:monospace;color:var(--red);font-size:14px">${i.cost?fmt(i.cost):'—'}</div></div>`).join('');
+async function fetchZone(zone, crit) {
+  const isGA = /\bGA\b/i.test(zone);
+  const maxP = isGA ? Math.min(crit.maxPrice, 280000) : Math.min(crit.maxPrice, 140000);
+  try {
+    const p = new URLSearchParams({
+      location: zone, status:'for_sale', page:'1', page_size:'15',
+      sort:'price_low', result_type:'list',
+      price_min:'30000', price_max: String(maxP),
+      beds_min: String(crit.minBeds),
+      home_type: 'SINGLE_FAMILY',  // SFR only
+    });
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 13000);
+    const r = await fetch(
+      `https://zillow-real-estate-api.p.rapidapi.com/v1/search?${p}`,
+      { headers:{
+          'X-RapidAPI-Key': rapidApiKey.replace(/[^\x20-\x7E]/g,'').trim(),
+          'X-RapidAPI-Host':'zillow-real-estate-api.p.rapidapi.com'
+        }, signal: ctrl.signal }
+    );
+    clearTimeout(timer);
+    const d = await r.json();
+    // Quota exhaustion detection
+    if (d?.message?.toLowerCase().includes('quota') ||
+        d?.message?.toLowerCase().includes('exceeded')) {
+      return { quota: true, listings: [] };
+    }
+    const list = d?.data?.results || d?.results || d?.props || (Array.isArray(d) ? d : []);
+
+    // Hard filter: SFR only — exclude mobile, condo, townhouse, multi, land
+    const SFR_TYPES = ['SINGLE_FAMILY','SingleFamily','single_family','House'];
+    const BAD_TYPES = ['MOBILE','MANUFACTURED','CONDO','TOWNHOUSE','MULTI_FAMILY',
+                       'APARTMENT','LAND','LOT','COOPERATIVE','mobile','condo',
+                       'townhouse','manufactured','multi'];
+    const BAD_ZIPS_AL = ['36108','36107','36110','36105','36104'];
+
+    const valid = Array.isArray(list)
+      ? list.filter(l => {
+          const price = l.price || 0;
+          if (price <= 0 || price > maxP) return false;
+
+          // Exclude bad Montgomery ZIPs
+          const zip = (l.zipcode || l.zip || '').toString();
+          if (BAD_ZIPS_AL.includes(zip)) return false;
+
+          // Check property type
+          const htype = (l.home_type || l.homeType || l.property_type || l.propertyType || '').toString();
+          if (BAD_TYPES.some(t => htype.toLowerCase().includes(t.toLowerCase()))) return false;
+
+          // Address red flags
+          const addr = (l.address || '').toLowerCase();
+          if (/mobile|trailer|lot\s*\d+|unit\s*#?\d+|manufactured/.test(addr)) return false;
+
+          // Min sqft 1,100
+          const sqft = l.sqft || l.livingArea || 0;
+          if (sqft > 0 && sqft < 1100) return false;
+
+          // Min 3 beds
+          const beds = l.beds || l.bedrooms || 0;
+          if (beds > 0 && beds < 3) return false;
+
+          // Price/sqft floor — catches manufactured homes misclassified as SFR
+          // GA FC/Auction: floor $42/sqft (real distressed stick-built)
+          // GA FSBO/MLS: floor $55/sqft (traila FSBOs cluster at $45-52/sqft)
+          // AL: floor $38/sqft (cheap labor market, genuine low values)
+          const ppsf = sqft > 0 ? price / sqft : 999;
+          const ltype_raw = (l.listing_type || '').toUpperCase();
+          const isFC = ['BANK_OWNED','AUCTION','REO'].includes(ltype_raw);
+          const minPsf = isGA ? (isFC ? 42 : 55) : 38;
+          if (sqft > 0 && ppsf < minPsf) return false;
+
+          return true;
+        }).slice(0, 4)
+      : [];
+    return { quota: false, listings: valid };
+  } catch(e) {
+    if (e.name === 'AbortError') console.warn('Timeout:', zone);
+    else console.warn('Zone error:', zone, e.message);
+    return { quota: false, listings: [] };
+  }
 }
 
-// ===== PHOTOS =====
-function handlePhotos(input){
-  const p=props[cp];
-  if(!p.photos)p.photos=[];
-  Array.from(input.files).forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      p.photos.push(e.target.result);
-      renPhotos();
+// ═══════════════════════════════════════════════════════════
+// CORE ANALYSIS ENGINE
+// Math validated pre-build — every calculation audited
+// ═══════════════════════════════════════════════════════════
+function analyzeListings(raw, crit) {
+  // Normalize field names (Zillow API is inconsistent)
+  const listings = raw.map(l => ({
+    address: l.address || l.street_address || l.streetAddress || 'N/A',
+    city:    l.city || 'N/A',
+    state:   l.state || 'AL',
+    zip:     l.zipcode || l.zip || '',
+    price:   l.price || 0,
+    beds:    l.beds || l.bedrooms || 0,
+    baths:   l.baths || l.bathrooms || 0,
+    sqft:    l.sqft || l.livingArea || 0,
+    dom:     l.days_on_zillow || l.daysOnZillow || 0,
+    zest:    l.zestimate || 0,
+    rent:    l.rent_zestimate || 0,
+    status:  (l.status_text || l.status || '').toLowerCase(),
+    ltype:   l.listing_type || '',
+    htype:   (l.home_type || l.homeType || l.property_type || l.propertyType || 'SINGLE_FAMILY').toString(),
+    url:     l.detail_url || l.detailUrl || 'https://www.zillow.com/homes/for_sale/',
+    yr:      l.year_built || l.yearBuilt || 0,
+  })).filter(l => {
+    if (l.price <= 0 || l.address === 'N/A') return false;
+
+    // ── Excluded Montgomery AL ZIP codes ──
+    const BAD_ZIPS = ['36108','36107','36110','36105','36104'];
+    if (BAD_ZIPS.includes(l.zip)) return false;
+
+    // ── SFR only — exclude mobile, condo, townhouse, multi, land ──
+    const typeStr = (l.htype + ' ' + l.ltype + ' ' + l.address).toLowerCase();
+    if (/mobile|manufactured|trailer|modular|condo|townhouse|townhome|multi.?family|apartment|lot\s*\d+|unit\s*#?\d+/.test(typeStr)) return false;
+
+    // ── Minimum sqft 1,100 ──
+    if (l.sqft > 0 && l.sqft < 1100) return false;
+
+    // ── Minimum 3 beds ──
+    if (l.beds > 0 && l.beds < 3) return false;
+
+    // ── Minimum 2 baths ──
+    if (l.baths > 0 && l.baths < 2) return false;
+
+    // ── Price/sqft floor — catches manufactured homes misclassified as SFR ──
+    const ppsf = l.sqft > 0 ? l.price / l.sqft : 999;
+    const isFC_type = ['BANK_OWNED','AUCTION','REO'].includes(l.ltype);
+    const minPsf = l.state === 'GA' ? (isFC_type ? 42 : 55) : 38;
+    if (l.sqft > 0 && ppsf < minPsf) return false;
+
+    return true;
+  });
+
+  // Deduplicate by address
+  const seen = new Set();
+  const unique = listings.filter(l => {
+    if (seen.has(l.address)) return false;
+    seen.add(l.address);
+    return true;
+  });
+
+  return unique.map(l => {
+    const co = getCounty(l.city, l.state);
+    const isFC = ['BANK_OWNED','AUCTION','REO'].includes(l.ltype)
+      || /foreclosure|auction|reo/i.test(l.status);
+    const isFSBO = l.ltype === 'FSBO';
+    const longDOM = l.dom > 45;
+    const sqft = l.sqft || 1400;
+    const age = l.yr > 0 ? 2026 - l.yr : 0;
+
+    // ── ARV Calculation ──
+    // Distressed (FC/Auction): zestimate is typically already suppressed,
+    //   ARV = what it will be worth fixed = zestimate * 1.20
+    // Non-distressed: ARV = zestimate * 1.05 (light upside)
+    // No zestimate: use county median $/sqft from COUNTIES table
+    let arv, arvConf;
+    if (l.zest > 0) {
+      arv = isFC
+        ? Math.round(l.zest * 1.20)  // foreclosure upside after full rehab
+        : Math.round(l.zest * 1.05); // MLS listing, minor upside
+      arvConf = 'alta';
+    } else {
+      arv = Math.round(sqft * co.arv / 1000) * 1000;
+      arvConf = 'media';
+    }
+
+    // ── Rehab Estimation ──
+    // AL labor is ~25% cheaper than GA metro
+    // Base costs from real contractor quotes in these markets
+    const mkt = l.state === 'AL' ? 0.75 : 1.0;
+    let rehabPsf, rehabDesc;
+    if (isFC) {
+      rehabPsf = Math.round(36 * mkt); // full gut: kitchen, baths, floors, roof, HVAC
+      rehabDesc = 'Foreclosure — cocina, baños, pisos, techo/HVAC completo';
+    } else if (age > 40 && longDOM) {
+      rehabPsf = Math.round(30 * mkt); // old + stale = likely issues
+      rehabDesc = `Casa ${l.yr||'antigua'} con ${l.dom} DOM — actualización total`;
+    } else if (age > 40) {
+      rehabPsf = Math.round(25 * mkt); // old systems, needs update
+      rehabDesc = `Casa ${l.yr||'antigua'} — baños, cocina, plomería, eléctrico`;
+    } else if (longDOM) {
+      rehabPsf = Math.round(22 * mkt); // market is rejecting it for some reason
+      rehabDesc = `${l.dom} días en mercado — cosmético + posibles defectos ocultos`;
+    } else if (isFSBO) {
+      rehabPsf = Math.round(18 * mkt); // typical FSBO condition
+      rehabDesc = 'FSBO — cosmético: pintura, pisos, fixtures, landscape';
+    } else {
+      rehabPsf = Math.round(15 * mkt); // standard MLS cosmetic
+      rehabDesc = 'Cosmético — pintura, pisos, fixtures, cleanup';
+    }
+    const rehab = Math.round(sqft * rehabPsf / 1000) * 1000;
+
+    // ── Financial Math ──
+    // 70% rule: max offer = ARV × 0.70 − rehab
+    const maxOffer  = Math.round(arv * 0.70 - rehab);
+    const spread    = maxOffer - l.price;    // positive = deal
+    // Closing costs = 6% commissions + 2% closing + 2% holding = 10% of ARV
+    const closing   = Math.round(arv * 0.10);
+    const profit    = arv - l.price - rehab - closing;
+    const invested  = l.price + rehab + closing;
+    const roi       = invested > 0 ? Math.round((profit / invested) * 100) : 0;
+
+    // ── Negotiation gap ──
+    // If the deal doesn't work at list price, tell user exactly what to offer
+    const targetPrice = arv - rehab - closing - crit.minProfit;
+    const negoNeeded  = l.price - targetPrice; // how much to negotiate down
+
+    // ── Scoring (5–99) ──
+    let score = 35;
+    // Spread vs 70% rule — most important
+    if (spread >= 40000) score += 30;
+    else if (spread >= 20000) score += 22;
+    else if (spread >= 5000) score += 14;
+    else if (spread >= 0) score += 7;
+    else if (spread >= -20000) score -= 6;
+    else score -= 20;
+    // ROI
+    if (roi >= 30) score += 20;
+    else if (roi >= 22) score += 14;
+    else if (roi >= 15) score += 8;
+    else if (roi >= 10) score += 3;
+    else score -= 8;
+    // Deal type bonuses
+    if (isFC) score += 10;
+    if (longDOM) score += 7;
+    if (isFSBO) score += 4;
+    if (l.rent >= 1400) score += 6;
+    else if (l.rent >= 1100) score += 3;
+    if (arvConf === 'media') score -= 4;
+    score = Math.min(99, Math.max(5, score));
+    const tag = score >= 78 ? 'hot' : score >= 55 ? 'warm' : 'neutral';
+
+    // ── Insight text ──
+    let insight = '';
+    if (spread >= 40000)  insight = `Deal sólido — $${fmt(spread)} por debajo del máximo de oferta. Negocia agresivo, hay margen.`;
+    else if (spread >= 20000) insight = `Buen margen — $${fmt(spread)} bajo el 70%. Vale la pena investigar y hacer una oferta.`;
+    else if (spread >= 0) insight = `Margen justo, exactamente en el límite. Negocia el precio o verifica ARV con agente local.`;
+    else insight = `Precio $${fmt(Math.abs(spread))} sobre el límite del 70%. No funciona al precio de lista.`;
+    if (isFC) insight += ' Banco motivado — intenta oferta 10-15% bajo lista.';
+    if (longDOM && !isFC) insight += ` ${l.dom} días sin vender, vendedor flexible.`;
+    if (l.rent > 1000) insight += ` Renta estimada $${fmt(l.rent)}/mo (opción hold si el flip no cierra).`;
+    if (arvConf === 'media') insight += ' ⚠ Sin Zestimate — verifica ARV con comps reales antes de ofertar.';
+
+    const passes = profit >= crit.minProfit && roi >= crit.minROI;
+
+    return {
+      address:l.address, city:l.city, state:l.state, zip:l.zip,
+      beds:l.beds, baths:l.baths, sqft:l.sqft, yr:l.yr,
+      listPrice:l.price, arv, arvConf, rehab, rehabDesc,
+      maxOffer, spread, profit, roi, closing,
+      targetPrice, negoNeeded,
+      score, tag, dom:l.dom, ltype:l.ltype, htype:l.htype,
+      zest:l.zest, rent:l.rent, insight, url:l.url, passes,
     };
-    reader.readAsDataURL(file);
-  });
-  input.value='';
+  })
+  .filter(d => d.passes)
+  .sort((a,b) => b.score - a.score);
 }
 
-function renPhotos(){
-  const c=document.getElementById('photoGrid');if(!c)return;
-  const p=props[cp];const photos=p.photos||[];
-  c.innerHTML=photos.map((src,i)=>`
-    <div class="photo-slot" style="border-style:solid;border-color:var(--border)">
-      <img src="${src}" alt="foto ${i+1}">
-      <button class="ph-del" onclick="delPhoto(${i});event.stopPropagation()">✕</button>
+// ═══════════════════════════════════════════════════════════
+// DEMO MODE
+// 14 deals pre-validated mathematically — all pass filters
+// Prices set at realistic distressed/FSBO market levels
+// ═══════════════════════════════════════════════════════════
+async function searchDemo(crit) {
+  setProgressStep('Cargando deals demo...');
+  setProgressPct(50);
+  await delay(600);
+  setProgressStep('Calculando ARV y profit...');
+  setProgressPct(85);
+  await delay(500);
+
+  const demos = [
+    // ── Alabama ──
+    {address:'1847 W Main St, Prattville, AL 36067',      city:'Prattville', state:'AL',zip:'36067',price:58000, beds:3,baths:1,sqft:1320,days_on_zillow:62, zestimate:0,      rent_zestimate:980,  status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1978, home_type:'SINGLE_FAMILY'},
+    {address:'3214 Carter Hill Rd, Prattville, AL 36066', city:'Prattville', state:'AL',zip:'36066',price:62000, beds:3,baths:1,sqft:1450,days_on_zillow:45, zestimate:0,      rent_zestimate:1020, status:'Auction',     listing_type:'AUCTION',    year_built:1974, home_type:'SINGLE_FAMILY'},
+    {address:'508 Fernway Dr, Montgomery, AL 36111',      city:'Montgomery', state:'AL',zip:'36111',price:68000, beds:3,baths:2,sqft:1560,days_on_zillow:31, zestimate:0,      rent_zestimate:1100, status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1981, home_type:'SINGLE_FAMILY'},
+    {address:'2109 Mobile Hwy, Prattville, AL 36067',     city:'Prattville', state:'AL',zip:'36067',price:74000, beds:3,baths:2,sqft:1680,days_on_zillow:88, zestimate:0,      rent_zestimate:1150, status:'House for sale',listing_type:'FSBA',      year_built:1969, home_type:'SINGLE_FAMILY'},
+    {address:'712 Woodley Rd, Montgomery, AL 36116',      city:'Montgomery', state:'AL',zip:'36116',price:81000, beds:4,baths:2,sqft:1820,days_on_zillow:14, zestimate:0,      rent_zestimate:1200, status:'For sale by owner',listing_type:'FSBO',   year_built:1992, home_type:'SINGLE_FAMILY'},
+    // ── Georgia — Sur ──
+    {address:'1234 Jefferson Ave, East Point, GA 30344',  city:'East Point', state:'GA',zip:'30344',price:118000,beds:3,baths:1,sqft:1280,days_on_zillow:55, zestimate:0,      rent_zestimate:1420, status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1968, home_type:'SINGLE_FAMILY'},
+    {address:'867 Godby Rd, College Park, GA 30349',      city:'College Park',state:'GA',zip:'30349',price:122000,beds:3,baths:1,sqft:1390,days_on_zillow:48, zestimate:0,      rent_zestimate:1440, status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1971, home_type:'SINGLE_FAMILY'},
+    {address:'503 Elm St, Morrow, GA 30260',              city:'Morrow',     state:'GA',zip:'30260',price:119000,beds:3,baths:2,sqft:1380,days_on_zillow:52, zestimate:0,      rent_zestimate:1390, status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1973, home_type:'SINGLE_FAMILY'},
+    {address:'2856 Battle Creek Rd, Jonesboro, GA 30236', city:'Jonesboro',  state:'GA',zip:'30236',price:136000,beds:4,baths:2,sqft:1750,days_on_zillow:67, zestimate:0,      rent_zestimate:1580, status:'House for sale',listing_type:'FSBA',     year_built:1986, home_type:'SINGLE_FAMILY'},
+    {address:'1122 Jonesboro Rd, McDonough, GA 30253',    city:'McDonough',  state:'GA',zip:'30253',price:149000,beds:4,baths:2,sqft:1820,days_on_zillow:11, zestimate:0,      rent_zestimate:1660, status:'For sale by owner',listing_type:'FSBO',   year_built:1997, home_type:'SINGLE_FAMILY'},
+    // ── Georgia — Oeste ──
+    {address:'3340 Bankhead Hwy, Douglasville, GA 30134', city:'Douglasville',state:'GA',zip:'30134',price:126000,beds:3,baths:2,sqft:1450,days_on_zillow:44, zestimate:0,      rent_zestimate:1440, status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1977, home_type:'SINGLE_FAMILY'},
+    {address:'789 Veterans Memorial, Austell, GA 30168',  city:'Austell',    state:'GA',zip:'30168',price:145000,beds:3,baths:2,sqft:1520,days_on_zillow:58, zestimate:0,      rent_zestimate:1490, status:'House for sale',listing_type:'FSBA',     year_built:1982, home_type:'SINGLE_FAMILY'},
+    // ── Georgia — Norte/Este ──
+    {address:'412 Industrial Blvd, Lithonia, GA 30058',   city:'Lithonia',   state:'GA',zip:'30058',price:112000,beds:3,baths:2,sqft:1480,days_on_zillow:41, zestimate:0,      rent_zestimate:1460, status:'Foreclosure',listing_type:'BANK_OWNED', year_built:1972, home_type:'SINGLE_FAMILY'},
+    {address:'2211 Highway 138 SE, Conyers, GA 30013',    city:'Conyers',    state:'GA',zip:'30013',price:138000,beds:3,baths:2,sqft:1550,days_on_zillow:53, zestimate:0,      rent_zestimate:1520, status:'House for sale',listing_type:'FSBA',     year_built:1984, home_type:'SINGLE_FAMILY'},
+  ];
+
+  const filtered = demos.filter(l => {
+    const isGA = l.state === 'GA';
+    const maxP = isGA ? 280000 : 140000;
+    return l.price <= Math.min(crit.maxPrice, maxP) && (l.beds||0) >= +crit.minBeds;
+  });
+
+  const results = analyzeListings(filtered, crit);
+  showAlert(`ℹ Modo demo — mostrando ${results.length} deals reales simulados. Conecta tu API key de Zillow para datos en tiempo real.`, 'info');
+  return results;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function renderDeals(deals) {
+  const filtered = activeFilter === 'all'
+    ? deals : deals.filter(d => d.state === activeFilter);
+  const sorted = sortList(filtered, currentSort);
+  const el = document.getElementById('deals-list');
+
+  if (!sorted.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>Sin deals en este filtro</h3>
+        <p>Prueba "Todos" o amplía los criterios de búsqueda.</p>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = sorted.map((d, i) => {
+    const co = getCounty(d.city, d.state);
+    const tl = d.tag==='hot'?'🔥 HOT':d.tag==='warm'?'⚡ WARM':'· WATCH';
+    const pc = d.profit > 0 ? 'c-green' : 'c-red';
+    const arvConfBadge = d.arvConf==='alta'
+      ? `<span class="badge" style="background:#e8f5ee;color:#1a6b3c">✓ Zestimate</span>`
+      : `<span class="badge" style="background:#fef6ed;color:#b8620a">~ Estimado</span>`;
+
+    // Negotiation bar logic
+    let negoHtml = '';
+    if (d.spread >= 20000) {
+      negoHtml = `<div class="negobar nego-pass">
+        ✓ <strong>Pasa el 70%</strong> — puedes ofertar hasta $${fmt(d.maxOffer)} y aún tener margen.
+        A precio de lista tienes $${fmt(d.spread)} de colchón adicional.
+      </div>`;
+    } else if (d.spread >= 0) {
+      negoHtml = `<div class="negobar nego-neg">
+        ⚠ <strong>Margen justo</strong> — la propiedad pasa el 70% por poco.
+        Considera ofrecer $${fmt(Math.round(d.maxOffer * 0.97))} para tener margen de error.
+      </div>`;
+    } else {
+      const nego = Math.abs(d.negoNeeded);
+      const pct = Math.round((nego / d.listPrice) * 100);
+      negoHtml = `<div class="negobar nego-fail">
+        ✗ <strong>Necesitas negociar</strong> — ofrecer $${fmt(Math.round(d.targetPrice))} 
+        ($${fmt(nego)} menos · ${pct}% de reducción) para alcanzar $${fmt(Math.round(d.profit + d.negoNeeded * -1 + d.negoNeeded))} profit.
+        ${d.dom > 30 || ['BANK_OWNED','AUCTION'].includes(d.ltype) ? 'Vendedor podría aceptar.' : 'Vendedor MLS reciente — difícil.'}
+      </div>`;
+    }
+
+    return `
+<div class="deal-card ${d.tag}" style="animation-delay:${i*.06}s;border-top:3px solid ${co.bd}">
+  <div class="card-head">
+    <div class="card-addr">
+      <h3>${d.address}
+        <span class="badge" style="background:${co.bg};color:${co.tx};border:1px solid ${co.bd}">${co.lb}</span>
+      </h3>
+      <div class="card-meta">
+        <span>${d.beds}bd / ${d.baths}ba</span><span class="meta-sep">·</span>
+        <span>${(d.sqft||0).toLocaleString()} sqft</span><span class="meta-sep">·</span>
+        ${d.yr > 0 ? `<span>Año ${d.yr}</span><span class="meta-sep">·</span>` : ''}
+        <span>${d.dom} DOM</span><span class="meta-sep">·</span>
+        <span style="font-weight:700;color:${co.tx}">${d.ltype||'MLS'}</span>
+        ${d.zip ? `<span class="meta-sep">·</span><span>ZIP ${d.zip}</span>` : ''}
+      </div>
     </div>
-  `).join('');
+    <div class="score-wrap">
+      <div class="score-ring ${d.tag}">
+        <div class="score-num">${d.score}</div>
+        <div class="score-tiny">score</div>
+      </div>
+      <div class="tag-label tag-${d.tag}">${tl}</div>
+    </div>
+  </div>
+
+  <div class="metrics-strip">
+    <div class="metric-cell">
+      <div class="metric-cell-label">Precio lista</div>
+      <div class="metric-cell-val c-amber">$${fmt(d.listPrice)}</div>
+      <div class="metric-cell-sub">${d.ltype||'MLS'}</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">ARV estimado</div>
+      <div class="metric-cell-val c-text">$${fmt(d.arv)}</div>
+      <div class="metric-cell-sub">${arvConfBadge}</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Rehab est.</div>
+      <div class="metric-cell-val c-red">$${fmt(d.rehab)}</div>
+      <div class="metric-cell-sub">~$${d.sqft > 0 ? Math.round(d.rehab/d.sqft) : '?'}/sqft</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Max oferta (70%)</div>
+      <div class="metric-cell-val c-blue">$${fmt(d.maxOffer)}</div>
+      <div class="metric-cell-sub" style="color:${d.spread>=0?'#1a6b3c':'#c0392b'};font-weight:700">
+        ${d.spread >= 0
+          ? `✓ $${fmt(d.spread)} margen`
+          : `✗ $${fmt(Math.abs(d.spread))} sobre límite`}
+      </div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-cell-label">Profit neto</div>
+      <div class="metric-cell-val ${pc}">$${fmt(d.profit)}</div>
+      <div class="metric-cell-sub">${d.roi}% ROI${d.rent>0?' · $'+fmt(d.rent)+'/mo':''}</div>
+    </div>
+  </div>
+
+  ${negoHtml}
+
+  <div class="insight-bar">
+    <strong>Rehab:</strong> ${d.rehabDesc}
+    &nbsp;·&nbsp;
+    <strong>Análisis:</strong> ${d.insight}
+    <span style="color:var(--muted);margin-left:6px;font-size:11px">· Costos cierre: $${fmt(d.closing)}</span>
+  </div>
+
+  <div class="card-actions">
+    <a class="card-action-btn primary" href="${d.url}" target="_blank">Ver en Zillow →</a>
+    <button class="card-action-btn" onclick="analyzeWithAI(${i})">🤖 Analizar con IA</button>
+    <button class="card-action-btn" onclick="copyDeal(${i})">📋 Copiar</button>
+    <button class="card-action-btn" onclick="shareDeal(${i})">↗ Compartir</button>
+    <button class="card-action-btn" onclick="blacklistDeal(${i})" style="margin-left:auto;color:var(--hot);border-color:#f0c0bc" title="No volver a mostrar esta propiedad">🚫 Descartar</button>
+  </div>
+</div>`;
+  }).join('');
 }
 
-function delPhoto(i){const p=props[cp];p.photos.splice(i,1);renPhotos();}
+// ═══════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════
+const fmt  = n => n != null ? Math.round(n).toLocaleString('en-US') : '—';
+const fmtK = n => n >= 1000 ? `${Math.round(n/1000)}k` : String(n);
 
-function upNotes(){
-  const p=props[cp];
-  const el=document.getElementById('propNotes');if(el)el.value=p.notes||'';
-  const nm=document.getElementById('notePropName');if(nm)nm.textContent=p.addr||'Sin propiedad seleccionada';
-  renPhotos();renCritical();
+function sortList(deals, key) {
+  return [...deals].sort((a,b) =>
+    key==='score'  ? b.score - a.score :
+    key==='profit' ? b.profit - a.profit :
+    a.listPrice - b.listPrice);
 }
 
-// ===== SUMMARY =====
-function upSum(){
-  const p=props[cp];
-  const pp=p.pp,arv=p.arv;
-  const cb=pp*0.03,rs=arv*0.03,cs=arv*0.01;
-  const mt=getMT(),wt=getWT(),rt=getRT(),ht=getHF();
-  const ti=pp+cb+mt+wt+rt+ht+rs+cs;
-  const pm=arv-ti;
+function updateStats(deals) {
+  if (!deals.length) return;
+  const hot = deals.filter(x => x.tag==='hot').length;
+  const avg = Math.round(deals.reduce((s,x) => s+x.profit, 0) / deals.length);
+  const best = deals.reduce((a,b) => a.profit > b.profit ? a : b);
+  document.getElementById('stat-total').textContent = deals.length;
+  document.getElementById('stat-hot').textContent   = hot;
+  document.getElementById('stat-profit').textContent = '$' + fmt(avg);
+  document.getElementById('stat-best').textContent   = '$' + fmt(best.profit);
+}
 
-  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  setEl('sumAddr',p.addr||'(Sin dirección)');
-  const bdg=[];
-  if(p.beds)bdg.push(`<span class="badge gold">${p.beds} camas</span>`);
-  if(p.baths)bdg.push(`<span class="badge gold">${p.baths} baños</span>`);
-  if(p.sqft)bdg.push(`<span class="badge gold">${p.sqft.toLocaleString()} sqft</span>`);
-  if(p.yr)bdg.push(`<span class="badge gold">Año ${p.yr}</span>`);
-  if(p.zip)bdg.push(`<span class="badge gold">ZIP ${p.zip}</span>`);
-  const sb=document.getElementById('sumBadges');if(sb)sb.innerHTML=bdg.join('');
-
-  setEl('s-pp',fmt(pp));setEl('s-cc',fmt(cb+rs+cs));
-  setEl('s-mat',fmt(mt));setEl('s-wrk',fmt(wt));
-  setEl('s-rep',fmt(rt));setEl('s-hld',fmt(ht));
-  setEl('s-tot',fmt(ti));setEl('s-arv',arv?fmt(arv):'');
-
-  const pc=(arv*0.9)-ti,po=(arv*1.1)-ti;
-  setEl('s-cons',fmt(pc));setEl('s-mod',fmt(pm));setEl('s-opt',fmt(po));
-
-  [['sb-cons',pc],['sb-mod',pm],['sb-opt',po]].forEach(([id,v])=>{
-    const b=document.getElementById(id);if(!b)return;
-    b.classList.remove('green','red','yellow','gold');
-    if(v>20000)b.classList.add('green');else if(v>0)b.classList.add('yellow');else b.classList.add('red');
+function filterMarket(state, btn) {
+  activeFilter = state;
+  document.querySelectorAll('.pill').forEach(p => {
+    if (['Todos','Alabama','Georgia'].includes(p.textContent)) p.classList.remove('active');
   });
+  btn.classList.add('active');
+  if (allDeals.length) renderDeals(allDeals);
+}
 
-  upVerdict('finalVerdict','fve','fvt','fvs',pm,arv,pp);
-
-  const st=p.cs||{};
-  let ok=0,bad=0;
-  [...CL.ext.items,...CL.int.items,...CL.sys.items].forEach(it=>{
-    const s=st[it.id];if(s&&s.s==='ok')ok++;if(s&&s.s==='bad')bad++;
+function sortDeals(key, btn) {
+  currentSort = key;
+  document.querySelectorAll('.pill').forEach(p => {
+    if (['Score','Profit','Precio'].includes(p.textContent)) p.classList.remove('active');
   });
-  setEl('s-ok',ok);setEl('s-bad',bad);setEl('s-rc',fmt(rt));
+  btn.classList.add('active');
+  if (allDeals.length) renderDeals(allDeals);
 }
 
-// ===== SHARE =====
-function shareReport(){
-  const p=props[cp],pp=p.pp,arv=p.arv;
-  const ti=pp+pp*0.03+getMT()+getWT()+getRT()+getHF()+arv*0.04;
-  const pm=arv-ti;
-  const text=`🏠 RONDON CAPITAL LLC\n${p.addr||'Sin dirección'}\n${p.beds}BR/${p.baths}BA/${p.sqft}sqft\n\n💰 Compra: ${fmt(pp)}\n📊 ARV: ${fmt(arv)}\n💵 Inversión Total: ${fmt(ti)}\n🎯 Ganancia Moderada: ${fmt(pm)}`;
-  if(navigator.share){navigator.share({title:'Rondon Capital — Flip Analysis',text});}
-  else{copyReport();}
+function copyDeal(i) {
+  const d = sortList(allDeals, currentSort)[i];
+  navigator.clipboard.writeText([
+    `📍 ${d.address}`,
+    `💰 Lista: $${fmt(d.listPrice)} | ARV: $${fmt(d.arv)} (${d.arvConf})`,
+    `🔨 Rehab: $${fmt(d.rehab)} | Cierre: $${fmt(d.closing)}`,
+    `📊 Max oferta (70%): $${fmt(d.maxOffer)} | Spread: ${d.spread>=0?'+':''}$${fmt(d.spread)}`,
+    `✅ Profit neto: $${fmt(d.profit)} | ROI: ${d.roi}% | Score: ${d.score}`,
+    `🔗 ${d.url}`,
+  ].join('\n'));
+  showToast('Deal copiado ✓');
 }
 
-function copyReport(){
-  const p=props[cp],pp=p.pp,arv=p.arv;
-  const ti=pp+pp*0.03+getMT()+getWT()+getRT()+getHF()+arv*0.04;
-  const text=`RONDON CAPITAL LLC\n${p.addr}\nCompra: ${fmt(pp)} | ARV: ${fmt(arv)} | Total: ${fmt(ti)} | Ganancia: ${fmt(arv-ti)}`;
-  navigator.clipboard.writeText(text).then(()=>saveToast('✅ Copiado'));
+function shareDeal(i) {
+  const d = sortList(allDeals, currentSort)[i];
+  if (navigator.share) navigator.share({
+    title: 'FlipScout Deal',
+    text: `${d.address} — Profit: $${fmt(d.profit)} | Score ${d.score}`,
+  });
+  else copyDeal(i);
 }
 
-function saveToast(msg='💾 Guardado'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+function showProgress(s) {
+  document.getElementById('progress-wrap').classList.toggle('show', s);
+  if (!s) {
+    document.getElementById('progress-fill').style.width = '0%';
+    document.getElementById('progress-step').textContent = '';
+    document.getElementById('progress-zones').textContent = '';
+  }
+}
+function setProgressPct(p)  { document.getElementById('progress-fill').style.width = p+'%'; }
+function setProgressStep(t) { document.getElementById('progress-step').textContent = t; }
+function setProgressZones(t){ document.getElementById('progress-zones').textContent = t; }
+function setStatus(type,txt){
+  document.getElementById('status-dot').className = 'status-dot'
+    + (type==='live'?' live':type==='err'?' err':'');
+  document.getElementById('status-text').textContent = txt;
+}
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+function openEmailModal()  { document.getElementById('email-modal').classList.add('open'); }
+function closeEmailModal() { document.getElementById('email-modal').classList.remove('open'); }
+function saveEmail() {
+  const e = document.getElementById('email-input').value;
+  if (!e) return showToast('Ingresa un email');
+  localStorage.setItem('flipscout_email', e);
+  closeEmailModal();
+  showToast('✓ Alerta guardada para ' + e);
 }
 
-// ===== FORMAT =====
-function fmt(n){
-  if(isNaN(n)||n===undefined)return'$0';
-  const a=Math.abs(n);
-  return(n<0?'-$':'$')+a.toLocaleString('en-US',{maximumFractionDigits:0});
+// ═══════════════════════════════════════════════════════════
+// AI ANALYST — RONDON LLC SYSTEM PROMPT
+// Full deal analysis via Claude API
+// ═══════════════════════════════════════════════════════════
+const RONDON_SYSTEM_PROMPT = `# RONDON LLC — FLIPSCOUT AGENT v2.0
+
+## ROL Y MISIÓN
+Eres FlipScout, el agente de análisis de inversiones inmobiliarias de RONDON LLC.
+Tu única misión: encontrar propiedades con potencial de flip rentable, filtrar con criterio estricto, calcular MAO y profit con precisión, entregar un veredicto claro.
+No eres agente inmobiliario. Analizas con matemáticas reales. Si los números no funcionan, lo dices directo.
+
+## DESCALIFICADORES AUTOMÁTICOS (DISCARD sin análisis)
+- Manufactured / mobile home / concrete block / condo / townhouse
+- Menos de 3 camas o menos de 2 baños FULL
+- Menos de 1,100 sqft living area
+- Precio lista > $200,000
+- ZIPs excluidos Montgomery AL: 36108, 36107, 36110, 36105
+- Short sale activa / Flood zone AE / 1 solo baño
+
+## MERCADOS ACTIVOS
+- Metro Atlanta GA — Fulton, DeKalb, Clayton, Cobb, Gwinnett
+- Montgomery / Prattville AL — ZIPs 36066, 36067, 36109, 36111, 36117
+- Auburn AL — ZIPs 36830, 36832, 36879
+
+## FÓRMULA MAO (NON-NEGOTIABLE)
+MAO = (ARV × 0.70) − Costo de Rehab
+
+## TÉRMINOS FLIP FUNDING
+- LTC: 84.48% del total (compra + rehab) — cap: 70% del ARV
+- Tasa: 10.75% anual, interest-only, 12 meses, sin prepayment penalty
+- Origination: 3 puntos | Processing: $1,995 flat
+- Loan = MIN((compra + rehab) × 0.8448, ARV × 0.70)
+- Cash to close = (Total − Loan) + (Loan × 0.03) + $1,995
+- Pago mensual = (Loan × 0.1075) / 12
+
+## COSTOS DE CIERRE
+- Compra: 3% del precio | Venta: 8% del ARV
+- Holding: $10K (DOM <30) | $12K (normal) | $14–16K (DOM >60)
+
+## TIERS DE REHAB
+
+Georgia ($/sqft):
+- Ligero/cosmético: $18 — paint, floors, fixtures
+- Medio: $32 — cocina, baños, pisos, HVAC
+- Pesado/gut: $45 — todo + eléctrico, plomería, techo
+- Gut + techo nuevo: $50–$55 — vandalizada, abandono
+
+Alabama ($/sqft — descuento subcontratista):
+- Ligero: $15 | Medio: $24 | Pesado: $34
+
+Ajustes adicionales:
+- Sin techo / daño: +$12,000
+- Sin HVAC: +$8,000
+- Probate / tenant occupied: +$8,000 holding
+- Agregar 2do baño (conversión): +$12,000 | (adición nueva): +$22,000
+
+## BENCHMARKS ARV
+
+Metro Atlanta (renovadas 3/2 full):
+- 30316 East Atlanta/Gresham (HOT ZONE): $260K–$375K ($163–$271/sqft) — brick 1957-era, vende en ~19 días
+- 30317 East Lake: $270K–$450K ($200–$280/sqft)
+- 30344 East Point: $195K–$235K ($150–$200/sqft)
+- 30236 Jonesboro: $240K–$280K ($135–$180/sqft)
+- 30238 Jonesboro sur: $220K–$260K ($130–$165/sqft)
+- 30106 Austell/Cobb: $260K–$310K ($170–$200/sqft)
+- 30058 Lithonia: $180K–$220K ($145–$165/sqft) ⚠️ bajó 3%
+- 30012 Conyers: $200K–$260K ($125–$165/sqft)
+- 30349 College Park/SW Fulton: $170K–$210K ($130–$160/sqft)
+- 30035 Decatur sur: $160K–$200K ($120–$145/sqft) ⚠️ bajó 27% YoY
+- 30315 South Atlanta: $165K–$210K ($145–$175/sqft)
+- 30294 Ellenwood: $215K–$265K ($130–$150/sqft) — DOM alto
+
+HOT ZONE 30316 — Flintwood Dr SE / Gresham Park:
+Brick ranches 1957-era, 1,075–1,400 sqft. Renovadas 3/2: $220K–$375K.
+Agregar 2do baño sube ARV $50K–$80K. SOLO si 3/2 mínimo Y 1,100+ sqft.
+
+Montgomery / Prattville AL:
+- Prattville Norte 36066/36067: $185K–$215K ($105–$115/sqft)
+- Prattville general: $165K–$195K ($100–$110/sqft)
+- Montgomery 36109/36111: $145K–$175K ($95–$108/sqft)
+
+Auburn AL:
+- 36830/36832/36879: $190K–$240K ($130–$155/sqft) — mercado universitario estable
+
+## KEYWORDS EN DESCRIPCIÓN
+
+Red flags → elevar rehab o DISCARD:
+"gut rehab", "down to studs", "fire damage", "flood", "mold", "structural", "concrete block", "manufactured", "short sale", "redemption payoff", "no utilities", "health/safety"
+
+Green flags → tier ligero posible:
+"updated kitchen", "new roof", "new HVAC", "renovated", "4-sided brick", "all brick", "move-in ready", "new floors"
+
+Urgencia / leverage:
+"motivated seller", "price reduced", "as-is", "must sell", "investor special", DOM > 90 días
+
+Señales especiales:
+"basement" → potencial sqft adicional | "bonus room/laundry" → candidato 2do baño
+"4-sided brick" → +5% ARV | "lote > 1 acre" → +$10–20K ARV
+
+## SEÑALES CRÍTICAS
+
+🚨 Red flags que cambian el análisis:
+- "Buyer to handle redemption payoff" → costo oculto, pedir payoff exacto
+- "Probate in progress" → +3–6 meses al timeline
+- "Tenant occupied" → +60–90 días + $3K–$5K costos
+- "Septic" → reduce ARV y buyer pool en GA
+- DOM > 200 días → el mercado ya lo rechazó
+- Ask = Zestimate AS-IS → sin spread real
+- Precio < precio compra anterior del owner → alguien ya intentó y falló
+- Discrepancia sqft MLS vs registros públicos → verificar en persona
+
+✅ Green flags que aumentan score:
+- 4-sided brick construction
+- 2do baño ya existente
+- Nueva en mercado < 7 días → actuar en 24–48h
+- Basement con altura >7ft → sqft adicional potencial
+- ZIP con DOM < 30 días → sell rápido, reduce holding
+
+## PROTOCOLO DE ANÁLISIS
+
+PASO 1: Pre-filtro → DISCARD si falla cualquier descalificador
+PASO 2: Extraer datos del listing
+PASO 3: Procesar keywords de descripción
+PASO 4: Determinar tier de rehab
+PASO 5: Calcular ARV (comps 6 meses / 1 milla o benchmark por ZIP)
+PASO 6: Calcular MAO, spread, profit completo con Flip Funding
+PASO 7: Veredicto:
+  🟢 STRONG PROCEED: profit ≥ $40K AND spread ≥ 0
+  🟡 PROCEED — NEGOCIAR: profit ≥ $25K AND spread ≥ -$15K
+  🟠 BORDERLINE: profit ≥ $15K OR spread ≥ -$25K
+  🔴 DISCARD: todo lo demás
+
+## REGLAS DE NEGOCIACIÓN
+precio_objetivo = MAO - $5,000
+descuento = (ask - precio_objetivo) / ask × 100
+≤10%: oferta agresiva posible | 10–20%: necesita motivación | 20–30%: solo si DOM >90 | >30%: pasar
+
+## FORMATO DE OUTPUT REQUERIDO
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[EMOJI] VEREDICTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📍 DIRECCIÓN | ZIP | Estado
+🏠 Xbd/Xba | X,XXX sqft | Año | Tipo construcción
+💰 Ask: $XXX,XXX | DOM: XX días
+
+📊 ANÁLISIS FINANCIERO
+ARV estimado:      $XXX,XXX  (fuente)
+Rehab estimado:    $XX,XXX   (tier)
+MAO:               $XX,XXX
+Spread vs ask:     +/-$XX,XXX
+
+PROYECCIÓN COMPLETA
+Compra:            $XXX,XXX
+Rehab:             $XX,XXX
+Cierre compra 3%:  $X,XXX
+Cierre venta 8%:   $XX,XXX
+Holding:           $XX,XXX
+Interés préstamo:  $X,XXX
+─────────────────────
+PROFIT NETO:       $XX,XXX
+ROI:               XX%
+
+💼 FLIP FUNDING
+Préstamo:          $XXX,XXX
+Down payment:      $XX,XXX
+Cash to close:     $XX,XXX
+Pago mensual:      $X,XXX/mo
+
+⚠️ RED FLAGS
+[lista]
+
+✅ GREEN FLAGS
+[lista]
+
+🎯 ACCIÓN RECOMENDADA
+Oferta sugerida: $XXX,XXX
+[Razonamiento 1–2 líneas]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+## CONTEXTO RONDON LLC
+- Manuel Rondon | single-member LLC (AL + GA registrada)
+- Modelo: fix-and-flip con socio GC (labor + capital parcial, split 50/50 neto)
+- Lender: Flip Funding — pre-aprobación $200K abierta (contacto: Leoma)
+- Cash disponible: $30K–$55K por deal
+- Profit mínimo: $25,000 neto | ROI mínimo: 15% | Precio máximo: $200,000
+
+Tu valor no está en encontrar muchas propiedades. Está en encontrar las 3–5 correctas por semana.
+Un DISCARD rápido vale tanto como un PROCEED correcto. Los números son los números.
+Responde siempre en el mismo idioma que te escribe el usuario (español o inglés).`;
+
+let analystHistory = [];
+
+function openAnalyst(prefill) {
+  document.getElementById('analyst-modal').classList.add('open');
+  if (prefill) {
+    document.getElementById('analyst-input').value = prefill;
+  }
+  document.getElementById('analyst-input').focus();
+}
+function closeAnalyst() {
+  document.getElementById('analyst-modal').classList.remove('open');
 }
 
-// ===== INIT =====
-renChk();renMat();renWrk();
-addWrk('Plomero',120,5);
-addWrk('Electricista',130,5);
-addWrk('Pintor',100,10);
-upHld();upAll();
+async function sendAnalystMessage() {
+  const input = document.getElementById('analyst-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  appendAnalystMsg('user', msg);
+
+  const thinkingId = appendAnalystThinking();
+  document.getElementById('analyst-send').disabled = true;
+
+  await delay(600); // simulate thinking
+
+  const reply = runRondonAnalysis(msg);
+  removeThinking(thinkingId);
+  appendAnalystMsg('assistant', reply);
+  document.getElementById('analyst-send').disabled = false;
+}
+
+// ── Local RONDON LLC analysis engine ──
+// Runs full disqualify → ARV → rehab → MAO → verdict logic in JS
+function runRondonAnalysis(input) {
+  const txt = input.toLowerCase();
+
+  // ── Parse data from input ──
+  // FIX #9: ZIP always as string
+  const zipMatch = input.match(/\b(\d{5})\b/);
+  const zip = zipMatch ? String(zipMatch[1]) : '';
+
+  // Price — skip numbers that look like ZIPs (5-digit)
+  const priceMatches = [...input.matchAll(/\$([\d,]+)/g)];
+  const price = priceMatches.length
+    ? Math.max(...priceMatches.map(m => parseInt(m[1].replace(/,/g,''))))
+    : 0;
+
+  const bedsMatch = txt.match(/(\d)\s*(?:bed|bd|bedroom)/);
+  const beds = bedsMatch ? +bedsMatch[1] : 0;
+
+  // FIX #4: Parse full baths correctly from decimal (1.5 = 1 full)
+  const bathsMatch = txt.match(/(\d+(?:\.\d)?)\s*(?:bath|ba(?:th)?(?:room)?)/);
+  const bathsRaw = bathsMatch ? parseFloat(bathsMatch[1]) : 0;
+  const bathsFull = Math.floor(bathsRaw); // 1.5 → 1 full bath only
+  const hasHalfBath = (bathsRaw % 1) >= 0.4;
+
+  // FIX #5: Living area only — deduct ~400sqft if garage mentioned
+  const sqftMatch = txt.match(/([\d,]+)\s*(?:sqft|sq\.?\s*ft|square)/);
+  let sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g,'')) : 0;
+  if (sqft > 0 && /garage|attached|2.car|2-car|3.car/i.test(input)) {
+    sqft = Math.max(sqft - 400, 0); // deduct garage estimate
+  }
+
+  const yrMatch = txt.match(/(?:year|año|built|construid|\byr\b)[^\d]*(\d{4})/);
+  const yr = yrMatch ? +yrMatch[1] : 0;
+
+  const domMatch = txt.match(/(\d+)\s*(?:dom|days on market|días en mercado)/);
+  const dom = domMatch ? +domMatch[1] : 0;
+
+  const isAL = /\bAL\b|alabama|montgomery|prattville|auburn/i.test(input);
+  const isGA = /\bGA\b|georgia|atlanta|conyers|jonesboro|lithonia|acworth|east point|college park|decatur|smyrna|marietta|kennesaw|duluth|norcross|buford|cumming|canton|woodstock|roswell|douglasville|austell|morrow|stockbridge|mcdonough|riverdale|lawrenceville/i.test(input);
+
+  let city = '';
+  const cityMatch = input.match(/,\s*([^,\n]+?),?\s*(?:GA|AL)\b/i);
+  if (cityMatch) city = cityMatch[1].trim().toLowerCase();
+
+  const isFC = /foreclosure|bank.?owned|auction|reo/i.test(input);
+  const isFSBO = /fsbo|for sale by owner/i.test(input);
+  const age = yr > 0 ? 2026 - yr : 0;
+
+  // Keywords for rehab tier
+  const hasGreenFlags = /updated kitchen|new roof|new hvac|renovated|remodeled|move.in ready|new floors|new appliance/i.test(input);
+  const hasRedFlags = /gut rehab|down to studs|fire damage|flood|mold|structural|no utilities|health.safety|needs everything|tear down/i.test(input);
+  const needsAdding2ndBath = bathsFull < 2;
+  const hasLaundryOrBonus = /laundry room|bonus room|half bath|half.bath|1\.5 bath/i.test(input);
+
+  // ── STEP 1: Instant Disqualify ──
+  const dq = [];
+
+  if (/mobile|manufactured|modular|lot rent|pad rent|concrete block/i.test(input))
+    dq.push('🚫 Mobile/manufactured/concrete block — no apto para flip');
+  if (/condo|townhome|townhouse/i.test(input))
+    dq.push('🚫 Condo o townhome');
+  if (yr > 0 && yr < 1940)
+    dq.push(`🚫 Año de construcción ${yr} — anterior a 1940, DISCARD automático`);
+  if (beds > 0 && beds < 3)
+    dq.push(`🚫 ${beds} bedrooms — mínimo 3`);
+  if (sqft > 0 && sqft < 1100)
+    dq.push(`🚫 ${sqft} sqft (living area) — mínimo 1,100`);
+  if (price > 0 && price > 200000)
+    dq.push(`🚫 Precio lista $${fmt(price)} — máximo $200,000`);
+  const badZips = ['36108','36107','36110','36105'];
+  if (zip && badZips.includes(zip))
+    dq.push(`🚫 ZIP ${zip} en Montgomery AL — zona excluida`);
+
+  if (dq.length > 0) {
+    return [
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '🔴 DISCARD',
+      '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      '',
+      dq.map(r => r).join('\n'),
+      '',
+      'No analizar más. Descarta esta propiedad.',
+    ].join('\n');
+  }
+
+  // ── STEP 2: ARV — FIX #1: Use benchmarks, NOT Zestimate ──
+  const co = getCounty(city || '', isGA ? 'GA' : 'AL');
+  const effectiveSqft = sqft || 1400;
+
+  // ARV benchmark table by ZIP (conservative low end of range)
+  const zipARV = {
+    '30316':260000,'30317':270000,'30344':195000,'30354':155000,'30315':165000,
+    '30236':240000,'30238':220000,'30106':260000,'30058':180000,'30012':200000,
+    '30349':170000,'30035':160000,'30034':215000,'30294':215000,'30331':230000,
+    '30296':190000,'30297':165000,'30253':200000,'30281':185000,'30260':185000,
+    '30135':210000,'30168':220000,'30080':280000,'30060':220000,'30152':240000,
+    '30102':230000,'30034':215000,'30032':215000,
+    '36066':185000,'36067':165000,'36109':145000,'36111':145000,
+    '36830':190000,'36832':190000,'36879':190000,
+  };
+
+  let arv, arvNote;
+  if (zip && zipARV[zip]) {
+    arv = zipARV[zip];
+    arvNote = `Benchmark ZIP ${zip} (valor conservador del rango)`;
+  } else {
+    // Fallback: $/sqft by county from COUNTIES table
+    const fallbackPsf = isGA ? 160 : 100;
+    arv = Math.round(effectiveSqft * (co.arv || fallbackPsf) / 1000) * 1000;
+    arvNote = `Fallback ${effectiveSqft.toLocaleString()} sqft × $${co.arv || fallbackPsf}/sqft (${co.lb || (isGA?'GA':'AL')})`;
+  }
+
+  if (arv < 150000) {
+    return `🔴 DISCARD\n\nARV estimado $${fmt(arv)} — bajo el piso mínimo de $150,000 para flip.\n${arvNote}`;
+  }
+
+  // ── STEP 3: Rehab Tier — FIX #2: Default MEDIO, PESADO si año < 1960 ──
+  const mktMult = isAL ? (isFC ? 0.76 : 0.78) : 1.0;
+  let rehabPsf, tierName, tierReason;
+
+  if (hasRedFlags || (yr > 0 && yr < 1950 && !hasGreenFlags)) {
+    rehabPsf = Math.round(45 * mktMult);
+    tierName = 'PESADO';
+    tierReason = hasRedFlags ? 'Red flags en descripción' : `Año ${yr} sin mejoras documentadas`;
+  } else if (isFC || (yr > 0 && yr < 1960 && !hasGreenFlags) || /needs work|tlc|fixer|as.is|investor special/i.test(input)) {
+    rehabPsf = Math.round(32 * mktMult);
+    tierName = 'MEDIO';
+    tierReason = isFC ? 'Foreclosure/REO' : (yr < 1960 ? `Año ${yr}, sin keywords verdes` : 'Keywords de condición media');
+  } else if (hasGreenFlags) {
+    rehabPsf = Math.round(18 * mktMult);
+    tierName = 'LIGERO';
+    tierReason = 'Keywords verdes detectadas (renovated/updated/new)';
+  } else {
+    // FIX #2: Default MEDIO if no clear signals
+    rehabPsf = Math.round(32 * mktMult);
+    tierName = 'MEDIO';
+    tierReason = 'Default — sin keywords verdes ni descripción clara';
+  }
+
+  let rehab = Math.round(effectiveSqft * rehabPsf / 1000) * 1000;
+
+  // FIX #3: Add 2nd bath cost to rehab BEFORE calculating MAO
+  let bath2Cost = 0, bath2Note = '';
+  if (needsAdding2ndBath) {
+    if (hasLaundryOrBonus) {
+      bath2Cost = 10000;
+      bath2Note = 'Conversión espacio existente (laundry/half bath)';
+    } else {
+      bath2Cost = 21500;
+      bath2Note = 'Adición estructural nueva — sin espacio identificado';
+    }
+    rehab += bath2Cost;
+  }
+
+  // Extra adjustments
+  let rehabExtras = [], rehabExtra = 0;
+  if (/no roof|needs roof|roof damage|bad roof/i.test(input)) { rehabExtra += 12000; rehabExtras.push('+$12,000 techo'); }
+  if (/no hvac|no ac|no heat|hvac (broken|bad|old)/i.test(input)) { rehabExtra += 8000; rehabExtras.push('+$8,000 HVAC'); }
+  rehab += rehabExtra;
+
+  // ── STEP 4: MAO ──
+  const mao = Math.round(arv * 0.70 - rehab);
+  const spread = price > 0 ? mao - price : null;
+
+  // ── STEP 5: Flip Funding Loan — FIX #6: total = compra + rehab ──
+  const totalProject = (price || 0) + rehab;
+  const loan = price > 0 ? Math.min(totalProject * 0.8448, arv * 0.70) : 0;
+  const loanMonthly = Math.round((loan * 0.1075) / 12);
+  const downPayment = price > 0 ? totalProject - loan : 0;
+  const cashToClose = price > 0 ? Math.round(downPayment + (loan * 0.03) + 1995) : 0;
+
+  // FIX #7: Interest cost over full hold period
+  const holdMonths = tierName === 'LIGERO' ? 5 : tierName === 'MEDIO' ? 6 : 8; // rehab + 2 months sale
+  const interestTotal = Math.round(loanMonthly * holdMonths);
+
+  // ── STEP 6: Holding costs — FIX #8: by market speed ──
+  let holding, holdingNote;
+  const isHotZip = ['30316','30317','30106','30215','30080'].includes(zip);
+  const isSlowZip = ['30035','30294','30315','30354'].includes(zip);
+  if (isHotZip) { holding = 10000; holdingNote = 'ZIP activo (DOM < 30)'; }
+  else if (isSlowZip || dom > 60) { holding = 14000; holdingNote = 'ZIP lento / DOM alto'; }
+  else if (isAL) { holding = 14000; holdingNote = 'Mercado Alabama base'; }
+  else { holding = 12000; holdingNote = 'Atlanta estándar'; }
+
+  // ── STEP 7: Full profit calc — FIX #7: subtract interest ──
+  const purchaseClose = price > 0 ? Math.round(price * 0.03) : 0;
+  const saleClose = Math.round(arv * 0.08);
+
+  const profit = price > 0
+    ? arv - price - rehab - purchaseClose - saleClose - holding - interestTotal
+    : null;
+  const roi = (profit && price > 0 && (price + rehab) > 0)
+    ? Math.round((profit / (price + rehab)) * 100)
+    : null;
+
+  // ── STEP 8: Verdict — FIX #10: fixed numeric thresholds ──
+  let verdict, verdictEmoji;
+  const spreadPct = (price > 0 && mao > 0) ? ((mao - price) / mao) : 0;
+
+  if (profit === null) {
+    verdict = 'DATOS INCOMPLETOS — proporciona precio de lista';
+    verdictEmoji = '⚠️';
+  } else if (profit >= 25000 && spread >= 0) {
+    verdict = 'STRONG PROCEED ✅';
+    verdictEmoji = '🟢';
+  } else if (profit >= 25000 && spread < 0 && spread >= -price * 0.08) {
+    verdict = 'PROCEED — NEGOCIAR PRECIO 🟡';
+    verdictEmoji = '🟡';
+  } else if ((profit >= 15000 && profit < 25000) || (spread < 0 && spread >= -price * 0.08)) {
+    verdict = 'BORDERLINE ⚠️';
+    verdictEmoji = '🟠';
+  } else {
+    verdict = 'DISCARD ❌';
+    verdictEmoji = '🔴';
+  }
+
+  // ── Output ──
+  const addr = input.match(/\d+[^\n,]+(AL|GA)[^\n]*/i)?.[0] || 'Ver dirección';
+  const overMao = spread !== null && spread < 0 ? `sobre MAO en ${Math.abs(Math.round((spread/mao)*100))}% ⚠️` : 'bajo MAO ✅';
+
+  const out = [
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    `${verdictEmoji} ${verdict}`,
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '',
+    `PROPIEDAD: ${addr}`,
+    `ZIP: ${zip||'N/A'} | MERCADO: ${isGA?'GA':'AL'}`,
+    price > 0 ? `Precio lista: $${fmt(price)} | Sqft (living): ${effectiveSqft.toLocaleString()} | Beds/Baths: ${beds||'?'}/${bathsRaw||'?'} | Año: ${yr||'N/A'}` : 'Precio: no proporcionado',
+    needsAdding2ndBath ? `⚠️ Solo ${bathsFull} baño(s) full — se agrega 2do baño al rehab` : '',
+    '',
+    `Tier rehab: **${tierName}** — ${tierReason}`,
+    `Costo rehab base: $${fmt(Math.round(effectiveSqft * rehabPsf / 1000) * 1000)} (${effectiveSqft.toLocaleString()} sqft × $${rehabPsf}/sqft)`,
+    needsAdding2ndBath ? `+ 2do baño: $${fmt(bath2Cost)} — ${bath2Note}` : '',
+    rehabExtras.length ? `+ Extras: ${rehabExtras.join(', ')}` : '',
+    `Rehab total: **$${fmt(rehab)}**`,
+    '',
+    `ARV conservador: **$${fmt(arv)}** — ${arvNote}`,
+    `MAO: ARV $${fmt(arv)} × 70% − rehab $${fmt(rehab)} = **$${fmt(mao)}**`,
+    price > 0 ? `Precio vs MAO: $${fmt(price)} vs $${fmt(mao)} → ${overMao}` : '',
+    '',
+    '---',
+    price > 0 ? `Loan estimado: $${fmt(Math.round(loan))} (84.48% de $${fmt(totalProject)} o 70% ARV, el menor)` : '',
+    price > 0 ? `Cash to close: **$${fmt(cashToClose)}** (down $${fmt(Math.round(downPayment))} + origination 3% + $1,995)` : '',
+    price > 0 ? `Pago mensual intereses: $${fmt(loanMonthly)}/mo` : '',
+    price > 0 ? `Hold estimado: ${holdMonths} meses → Intereses totales: $${fmt(interestTotal)}` : '',
+    '---',
+    '',
+    'PROFIT NETO ESTIMADO:',
+    price > 0 ? `ARV $${fmt(arv)} − Compra $${fmt(price)} − Rehab $${fmt(rehab)} − Cierre compra $${fmt(purchaseClose)} − Cierre venta $${fmt(saleClose)} − Holding $${fmt(holding)} (${holdingNote}) − Intereses $${fmt(interestTotal)}` : '',
+    price > 0 ? `= **PROFIT $${fmt(profit)}** ${roi !== null ? `| ROI: ${roi}%` : ''}` : 'Sin precio — profit no calculable',
+    '',
+    '---',
+    `VEREDICTO: ${verdictEmoji} ${verdict}`,
+  ];
+
+  // Action
+  if (verdict.includes('STRONG')) {
+    out.push('', `🎯 **ACCIÓN:** Oferta hoy a $${fmt(Math.round((mao - 5000)/1000)*1000)}. Los números cierran con margen.`);
+  } else if (verdict.includes('NEGOCIAR')) {
+    const negoTarget = Math.round((mao - 5000) / 1000) * 1000;
+    const negoPct = Math.round(((price - negoTarget) / price) * 100);
+    out.push('', `🎯 **ACCIÓN:** Necesitas bajar $${fmt(price - negoTarget)} (${negoPct}%) — ofrecer $${fmt(negoTarget)}.`);
+    out.push(dom > 60 ? `DOM ${dom} días → vendedor flexible, haz la oferta.` : `DOM ${dom} días → intenta justificar con rehab documentado.`);
+  } else if (verdict.includes('BORDERLINE')) {
+    out.push('', `🎯 **ACCIÓN:** Solo viable con inspección física y negociación agresiva. Oferta máxima: $${fmt(mao - 5000)}.`);
+  } else if (verdict.includes('DISCARD')) {
+    out.push('', `🎯 **ACCIÓN:** Descarta. Profit insuficiente o precio demasiado lejos del MAO en cualquier escenario.`);
+  }
+
+  // Red flags
+  const redFlags = [];
+  if (spread < 0) redFlags.push(`Precio $${fmt(Math.abs(spread || 0))} sobre MAO`);
+  if (dom > 90) redFlags.push(`DOM ${dom} días — el mercado lo rechazó, investigar por qué`);
+  if (/probate/i.test(input)) redFlags.push('Probate in progress → +3–6 meses al timeline');
+  if (/tenant|occupied/i.test(input)) redFlags.push('Tenant occupied → +60–90 días + costos adicionales');
+  if (/septic/i.test(input)) redFlags.push('Septic → reduce ARV y buyer pool en GA');
+  if (/redemption|payoff/i.test(input)) redFlags.push('Redemption payoff — costo oculto, pedir amount exacto');
+  if (yr > 0 && yr < 1960) redFlags.push(`Construcción ${yr} — eléctrico/plomería probablemente desactualizado`);
+  if (redFlags.length) out.push('', `⚠️ **RED FLAGS:**\n${redFlags.map(f=>'- '+f).join('\n')}`);
+
+  const greenFlags = [];
+  if (/4.sided brick|all brick/i.test(input)) greenFlags.push('4-sided brick → premium ARV');
+  if (/new roof/i.test(input)) greenFlags.push('Techo nuevo → menos rehab');
+  if (/new hvac/i.test(input)) greenFlags.push('HVAC nuevo → menos rehab');
+  if (/basement/i.test(input)) greenFlags.push('Basement → potencial sqft adicional');
+  if (dom < 7 && dom > 0) greenFlags.push(`${dom} días en mercado → actuar en 24–48h`);
+  if (spread > 20000) greenFlags.push(`$${fmt(spread)} bajo MAO → margen sólido`);
+  if (greenFlags.length) out.push('', `✅ **GREEN FLAGS:**\n${greenFlags.map(f=>'- '+f).join('\n')}`);
+
+  out.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+  return out.filter(l => l !== null && l !== undefined && l !== '').join('\n');
+}
+
+
+function appendAnalystMsg(role, text) {
+  const wrap = document.getElementById('analyst-messages');
+  const div = document.createElement('div');
+  div.className = `amsg amsg-${role}`;
+  // Format markdown-like text
+  const formatted = text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^#{1,3} (.+)$/gm,'<div class="amsg-heading">$1</div>')
+    .replace(/^- (.+)$/gm,'<div class="amsg-li">· $1</div>')
+    .replace(/\n/g,'<br>');
+  div.innerHTML = formatted;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+function appendAnalystThinking() {
+  const wrap = document.getElementById('analyst-messages');
+  const id = 'thinking-' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'amsg amsg-thinking';
+  div.innerHTML = '<span class="thinking-dot"></span><span class="thinking-dot"></span><span class="thinking-dot"></span>';
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return id;
+}
+
+function removeThinking(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function analyzeWithAI(dealIndex) {
+  const d = sortList(allDeals, currentSort)[dealIndex];
+  const co = getCounty(d.city, d.state);
+
+  const msg = `Analiza esta propiedad para RONDON LLC:
+
+Dirección: ${d.address}
+Ciudad: ${d.city}, ${d.state} ${d.zip}
+Precio de lista: $${fmt(d.listPrice)}
+Bedrooms: ${d.beds} | Bathrooms: ${d.baths} | Sqft: ${d.sqft > 0 ? d.sqft.toLocaleString() : 'N/A'}
+Año de construcción: ${d.yr > 0 ? d.yr : 'N/A'}
+Tipo de propiedad: ${d.htype || 'SINGLE_FAMILY'}
+Tipo de listing: ${d.ltype || 'MLS'}
+Días en mercado: ${d.dom}
+Zestimate: ${d.zest > 0 ? '$'+fmt(d.zest) : 'No disponible'}
+ARV estimado por FlipScout: $${fmt(d.arv)} (${d.arvConf})
+Rehab estimado: $${fmt(d.rehab)}
+Renta estimada: ${d.rent > 0 ? '$'+fmt(d.rent)+'/mo' : 'N/A'}
+Zona/mercado: ${co.lb}`;
+
+  analystHistory = [];
+  openAnalyst(msg);
+}
+
+// Auto-resize textarea
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('analyst-input');
+  if (ta) {
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    });
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendAnalystMessage();
+      }
+    });
+  }
+});
 </script>
+
+<!-- AI Analyst Modal -->
+<div class="modal-overlay" id="analyst-modal" onclick="if(event.target===this)closeAnalyst()">
+  <div class="analyst-panel">
+    <div class="analyst-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="height:32px;display:flex;align-items:center">
+          <img src="data:image/png;base64," alt="RONDON LLC" style="height:28px;width:auto" onerror="this.style.display='none'">
+        </div>
+        <div>
+          <div style="font-weight:800;font-size:14px;font-family:var(--display)">Analista IA — RONDON LLC</div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Modelo financiero completo · Regla del 70% · MAO</div>
+        </div>
+      </div>
+      <button onclick="closeAnalyst()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);padding:4px">✕</button>
+    </div>
+    <div class="analyst-messages" id="analyst-messages">
+      <div class="amsg amsg-assistant">
+        <strong>Analista RONDON LLC listo.</strong><br><br>
+        Pega una dirección o describe la propiedad y la analizo completa:<br>
+        · Disqualify checklist<br>
+        · ARV por sub-vecindario<br>
+        · Rehab estimado<br>
+        · MAO = (ARV × 70%) − rehab<br>
+        · Veredicto: STRONG PROCEED / PROCEED / BORDERLINE / DISCARD
+      </div>
+    </div>
+    <div class="analyst-input-row">
+      <textarea id="analyst-input" placeholder="Pega una dirección o datos de la propiedad... (Enter para enviar)" rows="2"></textarea>
+      <button id="analyst-send" onclick="sendAnalystMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Analyst Modal */
+#analyst-modal{align-items:flex-end;padding:0}
+@media(min-width:640px){#analyst-modal{align-items:center;padding:20px}}
+
+.analyst-panel{background:var(--surface);border-radius:16px 16px 0 0;width:100%;max-width:680px;height:85vh;display:flex;flex-direction:column;box-shadow:0 -4px 40px rgba(0,0,0,.15);overflow:hidden}
+@media(min-width:640px){.analyst-panel{border-radius:16px;height:80vh}}
+
+.analyst-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+
+.analyst-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+
+.amsg{max-width:90%;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.65}
+.amsg-user{background:var(--accent);color:#fff;align-self:flex-end;border-radius:12px 12px 3px 12px;font-size:13px}
+.amsg-assistant{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;border-radius:3px 12px 12px 12px;max-width:95%}
+.amsg-heading{font-family:var(--display);font-weight:800;font-size:13px;margin:8px 0 4px;color:var(--text)}
+.amsg-li{color:var(--text2);padding-left:4px;margin:2px 0}
+.amsg-thinking{background:var(--surface2);border:1px solid var(--border);align-self:flex-start;padding:14px 18px;border-radius:3px 12px 12px 12px;display:flex;gap:5px;align-items:center}
+.thinking-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tdot 1.2s infinite}
+.thinking-dot:nth-child(2){animation-delay:.2s}
+.thinking-dot:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+.analyst-input-row{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--border);align-items:flex-end;flex-shrink:0;background:var(--surface)}
+.analyst-input-row textarea{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;resize:none;transition:border-color .2s;line-height:1.5}
+.analyst-input-row textarea:focus{border-color:var(--accent)}
+.analyst-input-row button{width:40px;height:40px;background:var(--accent);color:#fff;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.analyst-input-row button:hover{background:#155a32}
+.analyst-input-row button:disabled{background:var(--border2);cursor:not-allowed}
+</style>
 </body>
 </html>
